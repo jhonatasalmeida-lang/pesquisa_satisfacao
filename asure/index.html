@@ -88,6 +88,28 @@
     .btn-livro:hover {
       box-shadow: 0 14px 30px rgba(243,156,18,0.4);
     }
+	
+	/* BOTÃO ADMIN (DISCRETO) */
+.admin-area {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.btn-admin {
+  background: #ecf0f1;
+  color: #2c3e50;
+  border: 1px solid #bdc3c7;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-admin:hover {
+  background: #dfe6e9;
+}
 
     /* RODAPÉ */
     .footer {
@@ -148,6 +170,15 @@
         LIVRO PONTO
       </button>
     </div>
+    
+    <div class="admin-area">
+  <button 
+    class="btn-admin"
+    onclick="window.location.href='admin.html'">
+    🔐 Área Administrativa
+  </button>
+  </div>
+
 
     <div class="footer">
       Toque em uma das opções para continuar
