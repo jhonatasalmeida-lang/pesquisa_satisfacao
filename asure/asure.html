@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>NPS - Pesquisa</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f4c81, #1fb6a6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100%;
+      padding: 16px;
+      color: #2d2d2d;
+    }
+
+    .nps-container {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 26px 20px;
+      width: 100%;
+      max-width: 820px;
+      max-height: 80%;
+      overflow-y: auto;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 14px;
+      text-align: center;
+      color: #0f4c81;
+      font-weight: 700;
+    }
+
+    label {
+      display: block;
+      margin: 16px 0 6px;
+      font-weight: 600;
+      color: #34495e;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #cfd8dc;
+      font-size: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select:focus, textarea:focus {
+      outline: none;
+      border-color: #1fb6a6;
+      box-shadow: 0 0 0 2px rgba(31, 182, 166, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .nps-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0 10px;
+    }
+
+.nps-btn {
+  flex: 1 0 18%;
+  min-width: 42px;       /* 🔴 CORREÇÃO */
+  padding: 12px 0;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  cursor: pointer;
+  background: #f5f7f9;
+  font-size: 15px;
+  font-weight: 600;
+  color: #34495e;
+  transition: all 0.2s ease;
+}
+
+.nps-btn {
+  flex: 1 0 28%;
+  min-width: 40px;
+}
+
+/* Faixas NPS */
+.nps-btn[data-valor="0"],
+.nps-btn[data-valor="1"],
+.nps-btn[data-valor="2"],
+.nps-btn[data-valor="3"],
+.nps-btn[data-valor="4"],
+.nps-btn[data-valor="5"]{
+  border-color: #e74c3c;
+}
+
+.nps-btn[data-valor="6"],
+.nps-btn[data-valor="7"],
+.nps-btn[data-valor="8"] {
+  border-color: #f1c40f;
+}
+
+.nps-btn[data-valor="9"],
+.nps-btn[data-valor="10"] {
+  border-color: #2ecc71;
+}
+
+
+    .nps-btn:hover {
+      background: #e3f2f0;
+      border-color: #1fb6a6;
+    }
+
+.nps-btn.active {
+  color: #fff;
+  border-color: transparent;
+  transform: scale(1.12);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+  animation: pulse 0.4s ease;
+}
+
+/* Cor dinâmica conforme faixa */
+.nps-btn.active[data-valor="0"],
+.nps-btn.active[data-valor="1"],
+.nps-btn.active[data-valor="2"],
+.nps-btn.active[data-valor="3"],
+.nps-btn.active[data-valor="4"],
+.nps-btn.active[data-valor="5"]
+ {
+  background: #e74c3c;
+}
+
+.nps-btn.active[data-valor="6"],
+.nps-btn.active[data-valor="7"],
+.nps-btn.active[data-valor="8"] {
+  background: #f1c40f;
+  color: #2c3e50;
+}
+
+.nps-btn.active[data-valor="9"],
+.nps-btn.active[data-valor="10"] {
+  background: #2ecc71;
+}
+
+/* Animação */
+@keyframes pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.18); }
+  100% { transform: scale(1.12); }
+}
+
+
+    b {
+      display: block;
+      margin-top: 24px;
+      margin-bottom: 8px;
+      color: #2c3e50;
+      font-size: 15px;
+    }
+
+    .nps-submit {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 26px;
+      transition: all 0.2s ease;
+    }
+
+    .nps-submit:hover {
+      filter: brightness(0.95);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Loading overlay */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.85);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .spinner {
+      border: 6px solid #e0e0e0;
+      border-top: 6px solid #1fb6a6;
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 900px) {
+      h1 {
+        font-size: 20px;
+      }
+
+      .nps-btn {
+        flex: 1 0 28%;
+        font-size: 14px;
+      }
+    }
+	
+	/* Foco visível para teclado */
+.nps-btn:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.nps-submit:focus-visible {
+  outline: 3px solid #0f4c81;
+  outline-offset: 3px;
+}
+
+/* Cursor e leitura */
+.nps-btn {
+  cursor: pointer;
+}
+
+/* Melhor contraste em mobile */
+@media (prefers-contrast: more) {
+  .nps-btn {
+    border-width: 2px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="nps-container">
+    <h1>Pesquisa de satisfação Unidade Regional de Ensino de Caieiras</h1>
+
+    <label for="nucleo">Selecione o setor que realizou o atendimento:</label>
+	
+    <div class="radio-group" id="nucleo">
+      <label class="radio-option">
+      <input type="radio" name="nucleo" value="Assessoria Técnica" checked> 
+      Assessoria Técnica</label>
+    </div>
+
+    <textarea id="observacao" rows="3" placeholder="Digite aqui sua mensagem (Elogios, Críticas e Sugestões)"></textarea>
+
+    <div>
+      <b>De 0 a 10, qual sua avaliação para os serviços prestados pela Unidade Regional de Ensino de Caieiras?</b>
+      <div id="npsOptions" class="nps-options"></div>
+    </div>
+
+    <input type="hidden" id="site" value="Site" />
+
+    <button class="nps-submit" onclick="enviarNPS()">Enviar</button>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+  </div>
+  
+    <script>
+    window.NPS_WIDGET = { notaSelecionada: null, inited: false };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      if (window.NPS_WIDGET.inited) return;
+      window.NPS_WIDGET.inited = true;
+
+      var optionsDiv = document.getElementById('npsOptions');
+      for (var i = 0; i <= 10; i++) {
+        (function(score){
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = score;
+          btn.className = 'nps-btn';
+          btn.setAttribute('data-valor', score);
+          btn.addEventListener('click', function () {
+            window.NPS_WIDGET.notaSelecionada = score;
+            destacarBotao(score);
+          });
+          optionsDiv.appendChild(btn);
+        })(i);
+      }
+    });
+
+    function destacarBotao(valor) {
+      var botoes = document.getElementsByClassName('nps-btn');
+      for (var i = 0; i < botoes.length; i++) {
+        botoes[i].classList.remove('active');
+      }
+      var alvo = document.querySelector('.nps-btn[data-valor="' + valor + '"]');
+      if (alvo) alvo.classList.add('active');
+    }
+
+    function enviarNPS() {
+      var nota = window.NPS_WIDGET.notaSelecionada;
+      var nucleo = document.querySelector('input[name="nucleo"]:checked');
+      var obs   = document.getElementById('observacao').value;
+	  var site = document.getElementById('site').value;
+
+      if (nota === null) {
+        alert("Selecione uma nota de 0 a 10.");
+        return;
+      }
+	  
+	  if (obs === "") {
+        alert("Digite um elogio, crítica ou sugestão.");
+        return;
+      }
+
+      var overlay = document.getElementById("loadingOverlay");
+      overlay.style.display = "flex"; // mostra loading
+
+      var scriptURL = "https://script.google.com/macros/s/AKfycbxm0vpkdXaT1bcqEx6QrYkQj6VqbIa6KApCT5zD1kaewWYJ9BX_87OLAjlnGgN_MPT8/exec";
+      var body = new URLSearchParams({
+        nota: String(nota),
+        nucleo: nucleo.value,
+        observacao: obs || "",
+		site: "Presencial"
+      });
+
+      fetch(scriptURL, { method: "POST", mode: "no-cors", body: body })
+      .then(() => {
+        alert("Obrigado pelo seu feedback!");
+        window.NPS_WIDGET.notaSelecionada = null;
+        destacarBotao(-1);
+        //document.getElementById('nucleo').value = "";
+        document.getElementById('observacao').value = "";
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Erro ao enviar resposta.");
+      })
+      .finally(() => {
+        overlay.style.display = "none"; // esconde loading
+      });
+    }
+  </script>
+
+</body>
+</html>
