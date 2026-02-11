@@ -1,189 +1,268 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin - Livro Ponto</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Admin - Livro Ponto</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      padding: 20px;
-    }
+<style>
+body { font-family: Arial, sans-serif; background:#f4f6f9; padding:20px; }
+h1 { text-align:center; margin-bottom:20px; }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+.login-box {
+  max-width:400px; margin:80px auto; background:#fff;
+  padding:30px; border-radius:10px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+}
 
-    .filtros {
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-    }
+.login-box input, .login-box button {
+  width:100%; padding:10px; margin-top:10px;
+  border-radius:6px; border:1px solid #ccc;
+}
 
-    .filtros input {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      width: 100%;
-    }
+.login-box button {
+  background:#2c3e50; color:#fff; border:none; cursor:pointer;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
+.filtros {
+  background:#fff; padding:15px; border-radius:8px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+  margin-bottom:15px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+}
 
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      font-size: 14px;
-    }
+table {
+  width:100%; border-collapse:collapse; background:#fff;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
 
-    th {
-      background: #2c3e50;
-      color: #fff;
-    }
+th, td { padding:10px; border-bottom:1px solid #ddd; font-size:14px; }
+th { background:#2c3e50; color:#fff; cursor:pointer; }
+th span { font-size:10px; margin-left:5px; }
 
-    tr:hover {
-      background: #f1f1f1;
-    }
+tr:hover { background:#f1f1f1; }
 
-    .assinatura img {
-      max-width: 120px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-  </style>
+.assinatura img { max-width:80px; border:1px solid #ccc; border-radius:4px; }
+.assinatura a { display:block; font-size:11px; }
+
+.paginacao {
+  margin-top:15px; text-align:center;
+}
+
+.paginacao button {
+  padding:6px 10px; margin:2px;
+  border-radius:4px; border:1px solid #ccc;
+  cursor:pointer;
+}
+
+.hidden { display:none; }
+</style>
 </head>
 <body>
+
+<!-- LOGIN -->
+<div id="login" class="login-box">
+  <h2>🔐 Acesso Administrativo</h2>
+  <input type="text" id="loginUser" placeholder="Usuário">
+  <input type="password" id="loginPass" placeholder="Senha">
+  <button onclick="fazerLogin()">Entrar</button>
+  <p id="loginErro" style="color:red; display:none;">Usuário ou senha inválidos.</p>
+</div>
+
+<!-- SISTEMA -->
+<div id="sistema" class="hidden">
 
 <h1>📋 Administração - Livro Ponto</h1>
 
 <div class="filtros">
-  <input type="text" id="filtroNome" placeholder="🔎 Filtrar por nome">
-  <input type="text" id="filtroUnidade" placeholder="🏫 Filtrar por unidade">
-  <input type="date" id="filtroDataInicio" title="Data inicial">
-  <input type="date" id="filtroDataFim" title="Data final">
+  <input type="text" id="filtroNome" placeholder="🔎 Nome">
+  <input type="text" id="filtroUnidade" placeholder="🏫 Unidade">
+  <input type="date" id="filtroDataInicio">
+  <input type="date" id="filtroDataFim">
 </div>
 
 <table>
   <thead>
     <tr>
-      <th>Data e Hora</th>
-      <th>Nome</th>
-      <th>Unidade</th>
+      <th onclick="ordenar('dataHora')">Data/Hora <span id="ord-dataHora"></span></th>
+      <th onclick="ordenar('nome')">Nome <span id="ord-nome"></span></th>
+      <th onclick="ordenar('unidade')">Unidade <span id="ord-unidade"></span></th>
       <th>Assinatura</th>
     </tr>
   </thead>
-  <tbody id="tabelaRegistros">
-    <tr>
-      <td colspan="4">Carregando registros...</td>
-    </tr>
-  </tbody>
+  <tbody id="tabelaRegistros"></tbody>
 </table>
 
+<div class="paginacao" id="paginacao"></div>
+
+</div>
+
 <script>
-  const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec";
+const URL_SCRIPT = "COLE_AQUI_SUA_URL_DO_APPS_SCRIPT";
 
-  let registrosOriginais = [];
+/* ===== LOGIN BÁSICO ===== */
+const USUARIO = "admin";
+const SENHA = "1234";
 
-  function formatarDataHora(isoString) {
-    const d = new Date(isoString);
-    const dia = String(d.getDate()).padStart(2, '0');
-    const mes = String(d.getMonth() + 1).padStart(2, '0');
-    const ano = d.getFullYear();
-    const hora = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
+function fazerLogin() {
+  const u = loginUser.value;
+  const p = loginPass.value;
 
-    return `${dia}/${mes}/${ano} ${hora}:${min}`;
+  if (u === USUARIO && p === SENHA) {
+    login.classList.add("hidden");
+    sistema.classList.remove("hidden");
+    carregarDados();
+  } else {
+    loginErro.style.display = "block";
   }
+}
 
-  function carregarDados() {
-    fetch(URL_SCRIPT)
-      .then(res => res.json())
-      .then(dados => {
-        registrosOriginais = dados;
-        aplicarFiltros();
-      })
-      .catch(err => {
-        document.getElementById("tabelaRegistros").innerHTML =
-          "<tr><td colspan='4'>Erro ao carregar dados.</td></tr>";
-        console.error(err);
-      });
-  }
+/* ===== SISTEMA ===== */
+let registrosOriginais = [];
+let registrosFiltrados = [];
+let paginaAtual = 1;
+const itensPorPagina = 10;
 
-  function aplicarFiltros() {
-    const nomeFiltro = document.getElementById("filtroNome").value.toLowerCase();
-    const unidadeFiltro = document.getElementById("filtroUnidade").value.toLowerCase();
-    const dataInicio = document.getElementById("filtroDataInicio").value;
-    const dataFim = document.getElementById("filtroDataFim").value;
+let ordemAtual = { campo: null, asc: true };
 
-    const filtrados = registrosOriginais.filter(r => {
-      const nomeOk = r.nome.toLowerCase().includes(nomeFiltro);
-      const unidadeOk = r.unidade.toLowerCase().includes(unidadeFiltro);
+function formatarDataHora(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString("pt-BR");
+}
 
-      const dataRegistro = new Date(r.dataHora);
-      let dataOk = true;
+function carregarDados() {
+  fetch(URL_SCRIPT)
+    .then(r => r.json())
+    .then(dados => {
+      registrosOriginais = dados;
+      aplicarFiltros();
+    })
+    .catch(err => alert("Erro ao carregar dados"));
+}
 
-      if (dataInicio) {
-        dataOk = dataRegistro >= new Date(dataInicio);
-      }
-      if (dataFim) {
-        const fim = new Date(dataFim);
-        fim.setHours(23,59,59,999);
-        dataOk = dataOk && dataRegistro <= fim;
-      }
+function aplicarFiltros() {
+  const nome = filtroNome.value.toLowerCase();
+  const unidade = filtroUnidade.value.toLowerCase();
+  const ini = filtroDataInicio.value;
+  const fim = filtroDataFim.value;
 
-      return nomeOk && unidadeOk && dataOk;
-    });
+  registrosFiltrados = registrosOriginais.filter(r => {
+    const nomeOk = r.nome.toLowerCase().includes(nome);
+    const unidadeOk = r.unidade.toLowerCase().includes(unidade);
 
-    renderizarTabela(filtrados);
-  }
+    let dataOk = true;
+    const d = new Date(r.dataHora);
 
-  function renderizarTabela(lista) {
-    const tbody = document.getElementById("tabelaRegistros");
-
-    if (lista.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro encontrado.</td></tr>";
-      return;
+    if (ini) dataOk = d >= new Date(ini);
+    if (fim) {
+      const f = new Date(fim);
+      f.setHours(23,59,59,999);
+      dataOk = dataOk && d <= f;
     }
 
-    tbody.innerHTML = "";
+    return nomeOk && unidadeOk && dataOk;
+  });
 
-    lista.forEach(r => {
-      const tr = document.createElement("tr");
+  paginaAtual = 1;
+  aplicarOrdenacao();
+}
 
-      tr.innerHTML = `
-        <td>${formatarDataHora(r.dataHora)}</td>
-        <td>${r.nome}</td>
-        <td>${r.unidade}</td>
-        <td class="assinatura">
-          ${r.assinaturaUrl ? `<img src="${r.assinaturaUrl}" alt="Assinatura">` : ""}
-        </td>
-      `;
+function ordenar(campo) {
+  if (ordemAtual.campo === campo) {
+    ordemAtual.asc = !ordemAtual.asc;
+  } else {
+    ordemAtual = { campo, asc: true };
+  }
+  aplicarOrdenacao();
+}
 
-      tbody.appendChild(tr);
+function aplicarOrdenacao() {
+  if (ordemAtual.campo) {
+    registrosFiltrados.sort((a,b) => {
+      let v1 = a[ordemAtual.campo];
+      let v2 = b[ordemAtual.campo];
+
+      if (ordemAtual.campo === "dataHora") {
+        v1 = new Date(v1);
+        v2 = new Date(v2);
+      } else {
+        v1 = (v1 || "").toString().toLowerCase();
+        v2 = (v2 || "").toString().toLowerCase();
+      }
+
+      if (v1 < v2) return ordemAtual.asc ? -1 : 1;
+      if (v1 > v2) return ordemAtual.asc ? 1 : -1;
+      return 0;
     });
   }
 
-  document.getElementById("filtroNome").addEventListener("input", aplicarFiltros);
-  document.getElementById("filtroUnidade").addEventListener("input", aplicarFiltros);
-  document.getElementById("filtroDataInicio").addEventListener("change", aplicarFiltros);
-  document.getElementById("filtroDataFim").addEventListener("change", aplicarFiltros);
+  atualizarIndicadores();
+  renderizarTabela();
+}
 
-  carregarDados();
+function atualizarIndicadores() {
+  ["dataHora","nome","unidade"].forEach(c => {
+    const el = document.getElementById("ord-"+c);
+    if (!el) return;
+    el.textContent = (ordemAtual.campo === c) ? (ordemAtual.asc ? "▲" : "▼") : "";
+  });
+}
+
+function renderizarTabela() {
+  const tbody = tabelaRegistros;
+  tbody.innerHTML = "";
+
+  const inicio = (paginaAtual - 1) * itensPorPagina;
+  const fim = inicio + itensPorPagina;
+  const pagina = registrosFiltrados.slice(inicio, fim);
+
+  if (pagina.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro.</td></tr>";
+    paginacao.innerHTML = "";
+    return;
+  }
+
+  pagina.forEach(r => {
+    const tr = document.createElement("tr");
+
+    const assinatura = r.assinaturaUrl 
+      ? `<a href="${r.assinaturaUrl}" target="_blank">Abrir</a>
+         <img src="${r.assinaturaUrl}" onerror="this.style.display='none'">`
+      : "";
+
+    tr.innerHTML = `
+      <td>${formatarDataHora(r.dataHora)}</td>
+      <td>${r.nome}</td>
+      <td>${r.unidade}</td>
+      <td class="assinatura">${assinatura}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+
+  renderizarPaginacao();
+}
+
+function renderizarPaginacao() {
+  const totalPaginas = Math.ceil(registrosFiltrados.length / itensPorPagina);
+  paginacao.innerHTML = "";
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if (i === paginaAtual) btn.style.fontWeight = "bold";
+    btn.onclick = () => { paginaAtual = i; renderizarTabela(); };
+    paginacao.appendChild(btn);
+  }
+}
+
+/* Eventos */
+filtroNome.oninput = aplicarFiltros;
+filtroUnidade.oninput = aplicarFiltros;
+filtroDataInicio.onchange = aplicarFiltros;
+filtroDataFim.onchange = aplicarFiltros;
 </script>
 
 </body>
