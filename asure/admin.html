@@ -76,7 +76,7 @@
   fetch(SCRIPT_URL)
     .then(res => res.json())
     .then(dados => {
-      const tbody = document.getElementById("registros");
+      const tbody = document.getElementById("tabelaRegistros");
 
       if (dados.erro) {
         alert("Erro: " + dados.erro);
