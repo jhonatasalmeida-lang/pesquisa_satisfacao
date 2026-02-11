@@ -1,262 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Livro Ponto Digital</title>
+  <meta charset="UTF-8">
+  <title>Admin - Livro Ponto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-body {
-  margin:0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg, #0f4c81, #1fb6a6);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  padding:16px;
-}
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f6fa;
+      padding: 20px;
+    }
 
-.container {
-  background:#fff;
-  border-radius:18px;
-  padding:24px;
-  width:100%;
-  max-width:820px;
-  box-shadow:0 12px 28px rgba(0,0,0,0.25);
-}
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #1f3c88;
+    }
 
-h1 {
-  text-align:center;
-  color:#0f4c81;
-  margin-bottom:20px;
-}
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+      border-radius: 10px;
+      overflow: hidden;
+    }
 
-label {
-  font-weight:600;
-  margin-top:12px;
-  display:block;
-}
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+      text-align: left;
+    }
 
-input[type="text"] {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  box-sizing: border-box;
-}
+    th {
+      background: #1f3c88;
+      color: #fff;
+    }
 
-input, select {
-  width:100%;
-  padding:12px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  margin-top:6px;
-  font-size:15px;
-}
+    tr:hover {
+      background: #f5f9ff;
+    }
 
-.canvas-box {
-  margin-top:16px;
-}
+    .assinatura-link {
+      color: #1e88e5;
+      font-weight: bold;
+      text-decoration: none;
+    }
 
-canvas {
-  width:100%;
-  height:220px;
-  border:2px dashed #aaa;
-  border-radius:10px;
-  touch-action: none;
-}
-
-.actions {
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-
-button {
-  flex:1;
-  padding:14px;
-  border:none;
-  border-radius:10px;
-  font-size:15px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.btn-clear { background:#f39c12; color:#fff; }
-.btn-send { background:#2ecc71; color:#fff; }
-.btn-back { background:#34495e; color:#fff; margin-top:16px; }
-
-.loading {
-  display:none;
-  text-align:center;
-  margin-top:10px;
-  font-weight:600;
-}
-</style>
+    .assinatura-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Livro Ponto Digital</h1>
+<h1>Admin - Livro Ponto Digital</h1>
 
-  <label>Nome completo</label>
-  <input type="text" id="nome" placeholder="Digite seu nome completo">
-
-  <label>Unidade Escolar</label>
-  <!-- COLE AQUI O SELECT DAS UNIDADES QUE TE PASSEI -->
-  
-  <select id="unidade" required>
-  <option value="">Selecione a unidade</option>
-
-  <option>ESCOLA ESTADUAL ADAIL JARBAS DUCLOS</option>
-  <option>ESCOLA ESTADUAL AFONSO MORENO</option>
-  <option>ESCOLA ESTADUAL ALADINO POLON</option>
-  <option>ESCOLA ESTADUAL ALBERTO GRAF CAPITAO</option>
-  <option>ESCOLA ESTADUAL ALBINO FIORE</option>
-  <option>ESCOLA ESTADUAL ALFRIED THEODOR WEISZFLOG</option>
-  <option>ESCOLA ESTADUAL ANA MARIA GARRIDO ORLANDIN PROFESSORA</option>
-  <option>ESCOLA ESTADUAL APARECIDO ROBERTO TONELLOTTI PROFESSOR</option>
-  <option>ESCOLA ESTADUAL ARMANDO SESTINI</option>
-  <option>ESCOLA ESTADUAL ARTHUR WEINGRILL</option>
-  <option>ESCOLA ESTADUAL AZEVEDO SOARES</option>
-  <option>ESCOLA ESTADUAL BAIRRO DO ITAIM</option>
-  <option>ESCOLA ESTADUAL BAIRRO JUNDIAIZINHO</option>
-  <option>ESCOLA ESTADUAL BELEM DA SERRA</option>
-  <option>ESCOLA ESTADUAL BENEDITO APARECIDO TAVARES PROFESSOR</option>
-  <option>ESCOLA ESTADUAL BENEDITO FAGUNDES MARQUES</option>
-  <option>ESCOLA ESTADUAL BUENO DE AZEVEDO FILHO PROFESSOR</option>
-  <option>ESCOLA ESTADUAL CARLOS AUGUSTO DE PADUA FLEURY PROFESSOR</option>
-  <option>ESCOLA ESTADUAL CELESTINA VALENTE LENGENFELDER PROFESSORA</option>
-  <option>ESCOLA ESTADUAL CHACARA CAMPONESA - JARDIM VASSOURAS</option>
-  <option>ESCOLA ESTADUAL DOMINGOS CAMBIAGHI PROFESSOR</option>
-  <option>ESCOLA ESTADUAL ELCIO JOSE PEREIRA CONTRIM PROFESSOR</option>
-  <option>ESCOLA ESTADUAL ELVIRA PARADA MANGA PROFESSORA</option>
-  <option>ESCOLA ESTADUAL FRANCISCO GONCALVES VIEIRA PROFESSOR</option>
-  <option>ESCOLA ESTADUAL HERMELINA DE ALBUQUERQUE PASSARELLA PROFESSORA</option>
-  <option>ESCOLA ESTADUAL IRACI SARTORI VIEIRA DA SILVA PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ISAIAS LUIZ MATIAZZO</option>
-  <option>ESCOLA ESTADUAL ISAURA DE MIRANDA BOTTO PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ISAURA VALENTINI HANSER PROFESSORA</option>
-  <option>ESCOLA ESTADUAL IVONE DOS ANJOS DA SILVA CAMPOS PROFA</option>
-  <option>ESCOLA ESTADUAL JARDIM ALEGRIA II</option>
-  <option>ESCOLA ESTADUAL JARDIM DAS ROSAS</option>
-  <option>ESCOLA ESTADUAL JARDIM SAO FRANCISCO</option>
-  <option>ESCOLA ESTADUAL JARDIM SILVIA II</option>
-  <option>ESCOLA ESTADUAL JOAQUIM MARQUES DA SILVA SOBRINHO TENENTE</option>
-  <option>ESCOLA ESTADUAL JOCIMARA VIEIRA DA SILVA PROFA</option>
-  <option>ESCOLA ESTADUAL JOSE CARLOS DA SILVA JUNIOR</option>
-  <option>ESCOLA ESTADUAL JOSE DE BARROS MARTINS EDITOR</option>
-  <option>ESCOLA ESTADUAL JOSE PARADA PROFESSOR</option>
-  <option>ESCOLA ESTADUAL JOSE ROBERTO MELCHIOR DOUTOR</option>
-  <option>ESCOLA ESTADUAL KATIA MARIA TARIFA LEME TONELLI PROFESSORA</option>
-  <option>ESCOLA ESTADUAL LENITA CORREA CAMARGO PROFESSORA</option>
-  <option>ESCOLA ESTADUAL LUIZ ALEXANDRE DOS SANTOS VEREADOR</option>
-  <option>ESCOLA ESTADUAL LYDIA SCALET WALKER PROFESSORA</option>
-  <option>ESCOLA ESTADUAL MARIA ZEZA GOMES DE OLIVEIRA</option>
-  <option>ESCOLA ESTADUAL MARIO TOLEDO DE MORAES DOUTOR</option>
-  <option>ESCOLA ESTADUAL NAIR HANNICKEL ROMARO</option>
-  <option>ESCOLA ESTADUAL NELSON MANZANARES DOUTOR</option>
-  <option>ESCOLA ESTADUAL NIDE ZAIM CARDOSO PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ODARICO OLIVEIRA NASCIMENTO PROFESSOR</option>
-  <option>ESCOLA ESTADUAL OLINDO DARTORA DOUTORA</option>
-  <option>ESCOLA ESTADUAL OTTO WEISZFLOG</option>
-  <option>ESCOLA ESTADUAL OZILDE ALBUQUERQUE PASSARELLA DOUTOR</option>
-  <option>ESCOLA ESTADUAL PARQUE CENTO E VINTE II</option>
-  <option>ESCOLA ESTADUAL PAULO DUARTE</option>
-  <option>ESCOLA ESTADUAL PEDRO GALRAO DO NASCIMENTO</option>
-  <option>ESCOLA ESTADUAL PEDRO LELIS DE SOUZA PREFEITO</option>
-  <option>ESCOLA ESTADUAL PEDRO PAULO DE AGUIAR</option>
-  <option>ESCOLA ESTADUAL PIETRO PETRI</option>
-  <option>ESCOLA ESTADUAL RITUCO MITANI PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ROGERIO LEVORIN PROFESSOR</option>
-  <option>ESCOLA ESTADUAL SUZANA DIAS</option>
-  <option>ESCOLA ESTADUAL ULYSSES SANCHES RAMIRES PROFESSOR</option>
-  <option>ESCOLA ESTADUAL VINCENZO LOBASSI</option>
-  <option>ESCOLA ESTADUAL WALTER RIBAS DE ANDRADE PROFESSOR</option>
-  <option>ESCOLA ESTADUAL WALTER WEISZFLOG</option>
-  <option>ESCOLA ESTADUAL ZILTON BICUDO PROFESSOR</option>
-</select>
-
-  <label>Visto / Assinatura</label>
-  <div class="canvas-box">
-    <canvas id="assinatura"></canvas>
-  </div>
-
-  <div class="actions">
-    <button class="btn-clear" onclick="limpar()">Limpar</button>
-    <button class="btn-send" onclick="enviar()">Registrar</button>
-  </div>
-
-  <div class="loading" id="loading">Enviando registro...</div>
-
-  <button class="btn-back" onclick="window.location.href='index.html'">⬅ Voltar</button>
-</div>
+<table>
+  <thead>
+    <tr>
+      <th>Data/Hora</th>
+      <th>Nome</th>
+      <th>Unidade</th>
+      <th>Assinatura</th>
+    </tr>
+  </thead>
+  <tbody id="tabelaRegistros"></tbody>
+</table>
 
 <script>
-const canvas = document.getElementById("assinatura");
-const ctx = canvas.getContext("2d");
-let desenhando = false;
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec";
 
-function resizeCanvas() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
+  fetch(SCRIPT_URL)
+    .then(res => res.json())
+    .then(dados => {
+      const tbody = document.getElementById("tabelaRegistros");
 
-canvas.addEventListener("pointerdown", e => {
-  desenhando = true;
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
-});
+      if (dados.erro) {
+        alert("Erro: " + dados.erro);
+        return;
+      }
 
-canvas.addEventListener("pointermove", e => {
-  if (!desenhando) return;
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
-});
+      dados.reverse().forEach(item => {
+        const tr = document.createElement("tr");
 
-canvas.addEventListener("pointerup", () => desenhando = false);
-canvas.addEventListener("pointerleave", () => desenhando = false);
+        tr.innerHTML = `
+          <td>${item.dataHora || ""}</td>
+          <td>${item.nome || ""}</td>
+          <td>${item.unidade || ""}</td>
+          <td>
+            ${item.assinaturaUrl 
+              ? `<a class="assinatura-link" href="${item.assinaturaUrl}" target="_blank">Ver</a>`
+              : ""}
+          </td>
+        `;
 
-function limpar() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function enviar() {
-  const nome = document.getElementById("nome").value.trim();
-  const unidade = document.getElementById("unidade").value;
-  const assinatura = canvas.toDataURL("image/png");
-
-  if (!nome || !unidade) {
-    alert("Preencha nome e unidade.");
-    return;
-  }
-
-  document.getElementById("loading").style.display = "block";
-
-  fetch("https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: new URLSearchParams({
-      nome: nome,
-      unidade: unidade,
-      assinatura: assinatura
+        tbody.appendChild(tr);
+      });
     })
-  })
-  .then(() => {
-alert("Registro realizado com sucesso!");
-
-setTimeout(() => {
-  window.location.href = "index.html";
-}, 1500);
-  })
-  .finally(() => {
-    document.getElementById("loading").style.display = "none";
-  });
-}
+    .catch(err => {
+      console.error(err);
+      alert("Erro ao carregar dados do Livro Ponto.");
+    });
 </script>
 
 </body>
