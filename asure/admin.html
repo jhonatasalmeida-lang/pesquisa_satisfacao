@@ -8,104 +8,183 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f6fa;
+      background: #f4f6f9;
       padding: 20px;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 20px;
-      color: #1f3c88;
+    }
+
+    .filtros {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .filtros input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
       overflow: hidden;
     }
 
     th, td {
       padding: 10px;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
+      border-bottom: 1px solid #ddd;
       text-align: left;
+      font-size: 14px;
     }
 
     th {
-      background: #1f3c88;
+      background: #2c3e50;
       color: #fff;
     }
 
     tr:hover {
-      background: #f5f9ff;
+      background: #f1f1f1;
     }
 
-    .assinatura-link {
-      color: #1e88e5;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
-    .assinatura-link:hover {
-      text-decoration: underline;
+    .assinatura img {
+      max-width: 120px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
 
-<h1>Admin - Livro Ponto Digital - ASURE</h1>
+<h1>📋 Administração - Livro Ponto</h1>
+
+<div class="filtros">
+  <input type="text" id="filtroNome" placeholder="🔎 Filtrar por nome">
+  <input type="text" id="filtroUnidade" placeholder="🏫 Filtrar por unidade">
+  <input type="date" id="filtroDataInicio" title="Data inicial">
+  <input type="date" id="filtroDataFim" title="Data final">
+</div>
 
 <table>
   <thead>
     <tr>
-      <th>Data/Hora</th>
+      <th>Data e Hora</th>
       <th>Nome</th>
       <th>Unidade</th>
       <th>Assinatura</th>
     </tr>
   </thead>
-  <tbody id="tabelaRegistros"></tbody>
+  <tbody id="tabelaRegistros">
+    <tr>
+      <td colspan="4">Carregando registros...</td>
+    </tr>
+  </tbody>
 </table>
 
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec";
+  const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec";
 
-  fetch(SCRIPT_URL)
-    .then(res => res.json())
-    .then(dados => {
-      const tbody = document.getElementById("tabelaRegistros");
+  let registrosOriginais = [];
 
-      if (dados.erro) {
-        alert("Erro: " + dados.erro);
-        return;
+  function formatarDataHora(isoString) {
+    const d = new Date(isoString);
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const ano = d.getFullYear();
+    const hora = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+
+    return `${dia}/${mes}/${ano} ${hora}:${min}`;
+  }
+
+  function carregarDados() {
+    fetch(URL_SCRIPT)
+      .then(res => res.json())
+      .then(dados => {
+        registrosOriginais = dados;
+        aplicarFiltros();
+      })
+      .catch(err => {
+        document.getElementById("tabelaRegistros").innerHTML =
+          "<tr><td colspan='4'>Erro ao carregar dados.</td></tr>";
+        console.error(err);
+      });
+  }
+
+  function aplicarFiltros() {
+    const nomeFiltro = document.getElementById("filtroNome").value.toLowerCase();
+    const unidadeFiltro = document.getElementById("filtroUnidade").value.toLowerCase();
+    const dataInicio = document.getElementById("filtroDataInicio").value;
+    const dataFim = document.getElementById("filtroDataFim").value;
+
+    const filtrados = registrosOriginais.filter(r => {
+      const nomeOk = r.nome.toLowerCase().includes(nomeFiltro);
+      const unidadeOk = r.unidade.toLowerCase().includes(unidadeFiltro);
+
+      const dataRegistro = new Date(r.dataHora);
+      let dataOk = true;
+
+      if (dataInicio) {
+        dataOk = dataRegistro >= new Date(dataInicio);
+      }
+      if (dataFim) {
+        const fim = new Date(dataFim);
+        fim.setHours(23,59,59,999);
+        dataOk = dataOk && dataRegistro <= fim;
       }
 
-      dados.reverse().forEach(item => {
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-          <td>${item.dataHora || ""}</td>
-          <td>${item.nome || ""}</td>
-          <td>${item.unidade || ""}</td>
-          <td>
-            ${item.assinaturaUrl 
-              ? `<a class="assinatura-link" href="${item.assinaturaUrl}" target="_blank">Ver</a>`
-              : ""}
-          </td>
-        `;
-
-        tbody.appendChild(tr);
-      });
-    })
-    .catch(err => {
-      console.error(err);
-      alert("Erro ao carregar dados do Livro Ponto.");
+      return nomeOk && unidadeOk && dataOk;
     });
+
+    renderizarTabela(filtrados);
+  }
+
+  function renderizarTabela(lista) {
+    const tbody = document.getElementById("tabelaRegistros");
+
+    if (lista.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro encontrado.</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = "";
+
+    lista.forEach(r => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${formatarDataHora(r.dataHora)}</td>
+        <td>${r.nome}</td>
+        <td>${r.unidade}</td>
+        <td class="assinatura">
+          ${r.assinaturaUrl ? `<img src="${r.assinaturaUrl}" alt="Assinatura">` : ""}
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  document.getElementById("filtroNome").addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroUnidade").addEventListener("input", aplicarFiltros);
+  document.getElementById("filtroDataInicio").addEventListener("change", aplicarFiltros);
+  document.getElementById("filtroDataFim").addEventListener("change", aplicarFiltros);
+
+  carregarDados();
 </script>
 
 </body>
 </html>
-
