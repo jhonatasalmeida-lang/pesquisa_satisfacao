@@ -17,8 +17,19 @@
   --radius:12px;
 }
 
+/* DARK MODE */
+body.dark {
+  --bg:#0f172a;
+  --card:#020617;
+  --border:#1e293b;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+  --primary:#2563eb;
+  --primary-light:#3b82f6;
+}
+
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family:"Segoe UI", Arial, sans-serif;
   background:var(--bg);
   padding:20px;
   color:var(--text);
@@ -35,26 +46,17 @@ body {
   border:1px solid var(--border);
 }
 
-.login-box h2 {
-  text-align:center;
-  margin-bottom:20px;
-  color:var(--primary);
-}
+.login-box h2 { text-align:center; margin-bottom:20px; color:var(--primary); }
 
-.login-box input,
-.login-box button {
+.login-box input, .login-box button {
   width:100%;
   padding:12px;
   margin-top:12px;
   border-radius:8px;
   border:1px solid var(--border);
   font-size:14px;
-}
-
-.login-box input:focus {
-  outline:none;
-  border-color:var(--primary-light);
-  box-shadow:0 0 0 2px rgba(44,82,130,0.15);
+  background:var(--card);
+  color:var(--text);
 }
 
 .login-box button {
@@ -63,34 +65,17 @@ body {
   border:none;
   cursor:pointer;
   font-weight:600;
-  transition:background .2s, transform .1s;
 }
 
-.login-box button:hover {
-  background:var(--primary-light);
-  transform:translateY(-1px);
-}
-
-/* BOTÃO VOLTAR */
 .btn-voltar {
-  background:#f7fafc !important;
+  background:#f1f5f9 !important;
   color:var(--primary) !important;
-  border:1px solid var(--border) !important;
-}
-
-.btn-voltar:hover {
-  background:#edf2f7 !important;
 }
 
 /* ===== SISTEMA ===== */
 .hidden { display:none; }
+.sistema-container { max-width:1200px; margin:0 auto; }
 
-.sistema-container {
-  max-width:1200px;
-  margin:0 auto;
-}
-
-/* Cabeçalho */
 .header {
   background:var(--card);
   padding:18px 25px;
@@ -105,10 +90,28 @@ body {
   gap:10px;
 }
 
-.header h1 {
-  font-size:20px;
-  margin:0;
-  color:var(--primary);
+.header h1 { font-size:20px; margin:0; color:var(--primary); }
+
+.header-actions {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.header-actions button {
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--card);
+  color:var(--text);
+  cursor:pointer;
+  font-size:13px;
+}
+
+.header-actions button.primary {
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
 }
 
 /* Filtros */
@@ -128,13 +131,8 @@ body {
   padding:10px 12px;
   border-radius:8px;
   border:1px solid var(--border);
-  font-size:14px;
-}
-
-.filtros input:focus {
-  outline:none;
-  border-color:var(--primary-light);
-  box-shadow:0 0 0 2px rgba(44,82,130,0.15);
+  background:var(--card);
+  color:var(--text);
 }
 
 /* Tabela */
@@ -146,37 +144,22 @@ body {
   overflow:hidden;
 }
 
-table {
-  width:100%;
-  border-collapse:collapse;
-}
+table { width:100%; border-collapse:collapse; }
 
 th, td {
   padding:12px 14px;
   border-bottom:1px solid var(--border);
   font-size:14px;
-  text-align:left;
 }
 
 th {
   background:var(--primary);
   color:#fff;
   cursor:pointer;
-  position:sticky;
-  top:0;
-  z-index:1;
 }
 
-th span {
-  font-size:11px;
-  margin-left:6px;
-}
+tbody tr:hover { background:rgba(100,116,139,0.1); }
 
-tbody tr:hover {
-  background:#f7fafc;
-}
-
-/* Assinatura */
 .assinatura img {
   max-width:80px;
   border:1px solid var(--border);
@@ -188,44 +171,25 @@ tbody tr:hover {
   display:block;
   font-size:11px;
   color:var(--primary-light);
-  text-decoration:none;
-}
-
-.assinatura a:hover {
-  text-decoration:underline;
 }
 
 /* Paginação */
-.paginacao {
-  margin:18px 0 5px;
-  text-align:center;
-}
+.paginacao { margin:18px 0 5px; text-align:center; }
 
 .paginacao button {
   padding:6px 12px;
   margin:3px;
   border-radius:6px;
   border:1px solid var(--border);
-  background:#fff;
+  background:var(--card);
+  color:var(--text);
   cursor:pointer;
-  font-size:13px;
-  transition:all .15s;
-}
-
-.paginacao button:hover {
-  background:#edf2f7;
 }
 
 .paginacao button[style*="bold"] {
   background:var(--primary);
   color:#fff;
   border-color:var(--primary);
-}
-
-/* Responsivo */
-@media (max-width:600px) {
-  .header h1 { font-size:16px; }
-  th, td { font-size:12px; padding:10px; }
 }
 </style>
 </head>
@@ -237,12 +201,8 @@ tbody tr:hover {
   <input type="text" id="loginUser" placeholder="Usuário">
   <input type="password" id="loginPass" placeholder="Senha">
   <button onclick="fazerLogin()">Entrar</button>
-  <button type="button" class="btn-voltar" onclick="window.location.href='index.html'">
-    ⬅ Voltar
-  </button>
-  <p id="loginErro" style="color:#c53030; display:none; margin-top:10px; font-size:13px;">
-    Usuário ou senha inválidos.
-  </p>
+  <button type="button" class="btn-voltar" onclick="window.location.href='index.html'">⬅ Voltar</button>
+  <p id="loginErro" style="color:#ef4444; display:none; margin-top:10px; font-size:13px;">Usuário ou senha inválidos.</p>
 </div>
 
 <!-- SISTEMA -->
@@ -250,13 +210,18 @@ tbody tr:hover {
 
   <div class="header">
     <h1>📋 Admin - Registro de Presença - ASURE</h1>
+    <div class="header-actions">
+      <button onclick="exportarExcel()">📊 Exportar Excel</button>
+      <button onclick="exportarPDF()">🖨️ Exportar PDF</button>
+      <button class="primary" onclick="toggleDarkMode()">🌙 Tema</button>
+    </div>
   </div>
 
   <div class="filtros">
     <input type="text" id="filtroNome" placeholder="🔎 Filtrar por nome">
     <input type="text" id="filtroUnidade" placeholder="🏫 Filtrar por unidade">
-    <input type="date" id="filtroDataInicio" title="Data inicial">
-    <input type="date" id="filtroDataFim" title="Data final">
+    <input type="date" id="filtroDataInicio">
+    <input type="date" id="filtroDataFim">
   </div>
 
   <div class="table-wrapper">
@@ -278,16 +243,22 @@ tbody tr:hover {
 
 <script>
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec";
-
-/* ===== LOGIN ===== */
 const USUARIO = "admin";
 const SENHA = "1234";
 
-function fazerLogin() {
-  const u = loginUser.value;
-  const p = loginPass.value;
+/* ===== DARK MODE ===== */
+function toggleDarkMode() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+}
 
-  if (u === USUARIO && p === SENHA) {
+if (localStorage.getItem("darkMode") === "true") {
+  document.body.classList.add("dark");
+}
+
+/* ===== LOGIN ===== */
+function fazerLogin() {
+  if (loginUser.value === USUARIO && loginPass.value === SENHA) {
     login.classList.add("hidden");
     sistema.classList.remove("hidden");
     carregarDados();
@@ -301,20 +272,16 @@ let registrosOriginais = [];
 let registrosFiltrados = [];
 let paginaAtual = 1;
 const itensPorPagina = 10;
-let ordemAtual = { campo: null, asc: true };
+let ordemAtual = { campo:null, asc:true };
 
 function formatarDataHora(iso) {
-  const d = new Date(iso);
-  return d.toLocaleString("pt-BR");
+  return new Date(iso).toLocaleString("pt-BR");
 }
 
 function carregarDados() {
   fetch(URL_SCRIPT)
     .then(r => r.json())
-    .then(dados => {
-      registrosOriginais = dados;
-      aplicarFiltros();
-    })
+    .then(d => { registrosOriginais = d; aplicarFiltros(); })
     .catch(() => alert("Erro ao carregar dados"));
 }
 
@@ -325,20 +292,15 @@ function aplicarFiltros() {
   const fim = filtroDataFim.value;
 
   registrosFiltrados = registrosOriginais.filter(r => {
-    const nomeOk = r.nome.toLowerCase().includes(nome);
-    const unidadeOk = r.unidade.toLowerCase().includes(unidade);
-
-    let dataOk = true;
     const d = new Date(r.dataHora);
-
-    if (ini) dataOk = d >= new Date(ini);
+    let ok = r.nome.toLowerCase().includes(nome) &&
+             r.unidade.toLowerCase().includes(unidade);
+    if (ini) ok = ok && d >= new Date(ini);
     if (fim) {
-      const f = new Date(fim);
-      f.setHours(23,59,59,999);
-      dataOk = dataOk && d <= f;
+      const f = new Date(fim); f.setHours(23,59,59,999);
+      ok = ok && d <= f;
     }
-
-    return nomeOk && unidadeOk && dataOk;
+    return ok;
   });
 
   paginaAtual = 1;
@@ -346,92 +308,77 @@ function aplicarFiltros() {
 }
 
 function ordenar(campo) {
-  if (ordemAtual.campo === campo) {
-    ordemAtual.asc = !ordemAtual.asc;
-  } else {
-    ordemAtual = { campo, asc: true };
-  }
+  ordemAtual.asc = ordemAtual.campo === campo ? !ordemAtual.asc : true;
+  ordemAtual.campo = campo;
   aplicarOrdenacao();
 }
 
 function aplicarOrdenacao() {
   if (ordemAtual.campo) {
-    registrosFiltrados.sort((a,b) => {
-      let v1 = a[ordemAtual.campo];
-      let v2 = b[ordemAtual.campo];
-
-      if (ordemAtual.campo === "dataHora") {
-        v1 = new Date(v1);
-        v2 = new Date(v2);
-      } else {
-        v1 = (v1 || "").toString().toLowerCase();
-        v2 = (v2 || "").toString().toLowerCase();
-      }
-
-      if (v1 < v2) return ordemAtual.asc ? -1 : 1;
-      if (v1 > v2) return ordemAtual.asc ? 1 : -1;
-      return 0;
+    registrosFiltrados.sort((a,b)=>{
+      let v1=a[ordemAtual.campo], v2=b[ordemAtual.campo];
+      if (ordemAtual.campo==="dataHora") { v1=new Date(v1); v2=new Date(v2); }
+      else { v1=(v1||"").toLowerCase(); v2=(v2||"").toLowerCase(); }
+      return v1<v2 ? (ordemAtual.asc?-1:1) : v1>v2 ? (ordemAtual.asc?1:-1) : 0;
     });
   }
-
-  atualizarIndicadores();
   renderizarTabela();
 }
 
-function atualizarIndicadores() {
-  ["dataHora","nome","unidade"].forEach(c => {
-    const el = document.getElementById("ord-"+c);
-    if (!el) return;
-    el.textContent = (ordemAtual.campo === c) ? (ordemAtual.asc ? "▲" : "▼") : "";
-  });
-}
-
 function renderizarTabela() {
-  const tbody = tabelaRegistros;
-  tbody.innerHTML = "";
+  tabelaRegistros.innerHTML="";
+  const ini=(paginaAtual-1)*itensPorPagina;
+  const pagina=registrosFiltrados.slice(ini,ini+itensPorPagina);
 
-  const inicio = (paginaAtual - 1) * itensPorPagina;
-  const fim = inicio + itensPorPagina;
-  const pagina = registrosFiltrados.slice(inicio, fim);
-
-  if (pagina.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='4'>Nenhum registro.</td></tr>";
-    paginacao.innerHTML = "";
+  if (!pagina.length) {
+    tabelaRegistros.innerHTML="<tr><td colspan='4'>Nenhum registro.</td></tr>";
+    paginacao.innerHTML="";
     return;
   }
 
-  pagina.forEach(r => {
-    const tr = document.createElement("tr");
-
-    const assinatura = r.assinaturaUrl 
-      ? `<a href="${r.assinaturaUrl}" target="_blank">Abrir</a>
-         <img src="${r.assinaturaUrl}" onerror="this.style.display='none'">`
-      : "";
-
-    tr.innerHTML = `
-      <td>${formatarDataHora(r.dataHora)}</td>
-      <td>${r.nome}</td>
-      <td>${r.unidade}</td>
-      <td class="assinatura">${assinatura}</td>
-    `;
-
-    tbody.appendChild(tr);
+  pagina.forEach(r=>{
+    tabelaRegistros.innerHTML+=`
+      <tr>
+        <td>${formatarDataHora(r.dataHora)}</td>
+        <td>${r.nome}</td>
+        <td>${r.unidade}</td>
+        <td class="assinatura">
+          ${r.assinaturaUrl ? `<a href="${r.assinaturaUrl}" target="_blank">Abrir</a><img src="${r.assinaturaUrl}">` : ""}
+        </td>
+      </tr>`;
   });
 
   renderizarPaginacao();
 }
 
 function renderizarPaginacao() {
-  const totalPaginas = Math.ceil(registrosFiltrados.length / itensPorPagina);
-  paginacao.innerHTML = "";
-
-  for (let i = 1; i <= totalPaginas; i++) {
-    const btn = document.createElement("button");
-    btn.textContent = i;
-    if (i === paginaAtual) btn.style.fontWeight = "bold";
-    btn.onclick = () => { paginaAtual = i; renderizarTabela(); };
-    paginacao.appendChild(btn);
+  const total = Math.ceil(registrosFiltrados.length/itensPorPagina);
+  paginacao.innerHTML="";
+  for(let i=1;i<=total;i++){
+    const b=document.createElement("button");
+    b.textContent=i;
+    if(i===paginaAtual) b.style.fontWeight="bold";
+    b.onclick=()=>{paginaAtual=i; renderizarTabela();}
+    paginacao.appendChild(b);
   }
+}
+
+/* ===== EXPORTAÇÕES ===== */
+function exportarExcel() {
+  let csv = "Data/Hora;Nome;Unidade\n";
+  registrosFiltrados.forEach(r=>{
+    csv += `"${formatarDataHora(r.dataHora)}";"${r.nome}";"${r.unidade}"\n`;
+  });
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "registros_presenca.csv";
+  link.click();
+}
+
+function exportarPDF() {
+  window.print();
 }
 
 /* Eventos */
@@ -440,6 +387,5 @@ filtroUnidade.oninput = aplicarFiltros;
 filtroDataInicio.onchange = aplicarFiltros;
 filtroDataFim.onchange = aplicarFiltros;
 </script>
-
 </body>
 </html>
