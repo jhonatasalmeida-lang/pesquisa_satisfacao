@@ -343,7 +343,7 @@ function renderizarTabela() {
         <td>${r.nome}</td>
         <td>${r.unidade}</td>
         <td class="assinatura">
-          ${r.assinaturaUrl ? `<a href="${r.assinaturaUrl}" target="_blank">Abrir</a><img src="${r.assinaturaUrl}">` : ""}
+          ${r.assinaturaUrl ? `<a href="${r.assinaturaUrl}" target="_blank">Abrir</a>` : ""}
         </td>
       </tr>`;
   });
@@ -389,3 +389,4 @@ filtroDataFim.onchange = aplicarFiltros;
 </script>
 </body>
 </html>
+
