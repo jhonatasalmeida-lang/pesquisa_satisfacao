@@ -6,78 +6,227 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body { font-family: Arial, sans-serif; background:#f4f6f9; padding:20px; }
-h1 { text-align:center; margin-bottom:20px; }
-
-.login-box {
-  max-width:400px; margin:80px auto; background:#fff;
-  padding:30px; border-radius:10px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+:root {
+  --primary:#1f3a5f;
+  --primary-light:#2c5282;
+  --bg:#f2f5f9;
+  --card:#ffffff;
+  --border:#e2e8f0;
+  --text:#1a202c;
+  --muted:#718096;
+  --radius:12px;
 }
 
-.login-box input, .login-box button {
-  width:100%; padding:10px; margin-top:10px;
-  border-radius:6px; border:1px solid #ccc;
+body {
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:var(--bg);
+  padding:20px;
+  color:var(--text);
+}
+
+/* ===== LOGIN ===== */
+.login-box {
+  max-width:420px;
+  margin:80px auto;
+  background:var(--card);
+  padding:35px 30px;
+  border-radius:var(--radius);
+  box-shadow:0 15px 35px rgba(0,0,0,0.15);
+  border:1px solid var(--border);
+}
+
+.login-box h2 {
+  text-align:center;
+  margin-bottom:20px;
+  color:var(--primary);
+}
+
+.login-box input,
+.login-box button {
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  font-size:14px;
+}
+
+.login-box input:focus {
+  outline:none;
+  border-color:var(--primary-light);
+  box-shadow:0 0 0 2px rgba(44,82,130,0.15);
 }
 
 .login-box button {
-  background:#2c3e50; color:#fff; border:none; cursor:pointer;
-}
-
-.filtros {
-  background:#fff; padding:15px; border-radius:8px;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-  margin-bottom:15px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:10px;
-}
-
-table {
-  width:100%; border-collapse:collapse; background:#fff;
-  box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-
-th, td { padding:10px; border-bottom:1px solid #ddd; font-size:14px; }
-th { background:#2c3e50; color:#fff; cursor:pointer; }
-th span { font-size:10px; margin-left:5px; }
-
-tr:hover { background:#f1f1f1; }
-
-.assinatura img { max-width:80px; border:1px solid #ccc; border-radius:4px; }
-.assinatura a { display:block; font-size:11px; }
-
-.paginacao {
-  margin-top:15px; text-align:center;
-}
-
-.paginacao button {
-  padding:6px 10px; margin:2px;
-  border-radius:4px; border:1px solid #ccc;
+  background:var(--primary);
+  color:#fff;
+  border:none;
   cursor:pointer;
+  font-weight:600;
+  transition:background .2s, transform .1s;
 }
 
-.hidden { display:none; }
+.login-box button:hover {
+  background:var(--primary-light);
+  transform:translateY(-1px);
+}
 
-/* BOTÃO VOLTAR LOGIN */
+/* BOTÃO VOLTAR */
 .btn-voltar {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #f5f6fa;
-  color: #2c3e50;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  background:#f7fafc !important;
+  color:var(--primary) !important;
+  border:1px solid var(--border) !important;
 }
 
 .btn-voltar:hover {
-  background: #e9ecef;
+  background:#edf2f7 !important;
 }
 
+/* ===== SISTEMA ===== */
+.hidden { display:none; }
+
+.sistema-container {
+  max-width:1200px;
+  margin:0 auto;
+}
+
+/* Cabeçalho */
+.header {
+  background:var(--card);
+  padding:18px 25px;
+  border-radius:var(--radius);
+  box-shadow:0 8px 20px rgba(0,0,0,0.08);
+  border:1px solid var(--border);
+  margin-bottom:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.header h1 {
+  font-size:20px;
+  margin:0;
+  color:var(--primary);
+}
+
+/* Filtros */
+.filtros {
+  background:var(--card);
+  padding:18px;
+  border-radius:var(--radius);
+  box-shadow:0 6px 15px rgba(0,0,0,0.06);
+  border:1px solid var(--border);
+  margin-bottom:18px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:12px;
+}
+
+.filtros input {
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  font-size:14px;
+}
+
+.filtros input:focus {
+  outline:none;
+  border-color:var(--primary-light);
+  box-shadow:0 0 0 2px rgba(44,82,130,0.15);
+}
+
+/* Tabela */
+.table-wrapper {
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:0 6px 15px rgba(0,0,0,0.06);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+}
+
+th, td {
+  padding:12px 14px;
+  border-bottom:1px solid var(--border);
+  font-size:14px;
+  text-align:left;
+}
+
+th {
+  background:var(--primary);
+  color:#fff;
+  cursor:pointer;
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+
+th span {
+  font-size:11px;
+  margin-left:6px;
+}
+
+tbody tr:hover {
+  background:#f7fafc;
+}
+
+/* Assinatura */
+.assinatura img {
+  max-width:80px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  margin-top:4px;
+}
+
+.assinatura a {
+  display:block;
+  font-size:11px;
+  color:var(--primary-light);
+  text-decoration:none;
+}
+
+.assinatura a:hover {
+  text-decoration:underline;
+}
+
+/* Paginação */
+.paginacao {
+  margin:18px 0 5px;
+  text-align:center;
+}
+
+.paginacao button {
+  padding:6px 12px;
+  margin:3px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+  font-size:13px;
+  transition:all .15s;
+}
+
+.paginacao button:hover {
+  background:#edf2f7;
+}
+
+.paginacao button[style*="bold"] {
+  background:var(--primary);
+  color:#fff;
+  border-color:var(--primary);
+}
+
+/* Responsivo */
+@media (max-width:600px) {
+  .header h1 { font-size:16px; }
+  th, td { font-size:12px; padding:10px; }
+}
 </style>
 </head>
 <body>
@@ -88,48 +237,49 @@ tr:hover { background:#f1f1f1; }
   <input type="text" id="loginUser" placeholder="Usuário">
   <input type="password" id="loginPass" placeholder="Senha">
   <button onclick="fazerLogin()">Entrar</button>
-  <button 
-  type="button"
-  class="btn-voltar"
-  onclick="window.location.href='index.html'">
-  ⬅ Voltar
-</button>
-
-  <p id="loginErro" style="color:red; display:none;">Usuário ou senha inválidos.</p>
+  <button type="button" class="btn-voltar" onclick="window.location.href='index.html'">
+    ⬅ Voltar
+  </button>
+  <p id="loginErro" style="color:#c53030; display:none; margin-top:10px; font-size:13px;">
+    Usuário ou senha inválidos.
+  </p>
 </div>
 
 <!-- SISTEMA -->
-<div id="sistema" class="hidden">
+<div id="sistema" class="hidden sistema-container">
 
-<h1>📋 Admin - Registro de Presença - ASURE</h1>
+  <div class="header">
+    <h1>📋 Admin - Registro de Presença - ASURE</h1>
+  </div>
 
-<div class="filtros">
-  <input type="text" id="filtroNome" placeholder="🔎 Nome">
-  <input type="text" id="filtroUnidade" placeholder="🏫 Unidade">
-  <input type="date" id="filtroDataInicio">
-  <input type="date" id="filtroDataFim">
-</div>
+  <div class="filtros">
+    <input type="text" id="filtroNome" placeholder="🔎 Filtrar por nome">
+    <input type="text" id="filtroUnidade" placeholder="🏫 Filtrar por unidade">
+    <input type="date" id="filtroDataInicio" title="Data inicial">
+    <input type="date" id="filtroDataFim" title="Data final">
+  </div>
 
-<table>
-  <thead>
-    <tr>
-      <th onclick="ordenar('dataHora')">Data/Hora <span id="ord-dataHora"></span></th>
-      <th onclick="ordenar('nome')">Nome <span id="ord-nome"></span></th>
-      <th onclick="ordenar('unidade')">Unidade <span id="ord-unidade"></span></th>
-      <th>Assinatura</th>
-    </tr>
-  </thead>
-  <tbody id="tabelaRegistros"></tbody>
-</table>
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="ordenar('dataHora')">Data/Hora <span id="ord-dataHora"></span></th>
+          <th onclick="ordenar('nome')">Nome <span id="ord-nome"></span></th>
+          <th onclick="ordenar('unidade')">Unidade <span id="ord-unidade"></span></th>
+          <th>Assinatura</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaRegistros"></tbody>
+    </table>
+  </div>
 
-<div class="paginacao" id="paginacao"></div>
-
+  <div class="paginacao" id="paginacao"></div>
 </div>
 
 <script>
 const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec";
 
-/* ===== LOGIN BÁSICO ===== */
+/* ===== LOGIN ===== */
 const USUARIO = "admin";
 const SENHA = "1234";
 
@@ -151,7 +301,6 @@ let registrosOriginais = [];
 let registrosFiltrados = [];
 let paginaAtual = 1;
 const itensPorPagina = 10;
-
 let ordemAtual = { campo: null, asc: true };
 
 function formatarDataHora(iso) {
@@ -166,7 +315,7 @@ function carregarDados() {
       registrosOriginais = dados;
       aplicarFiltros();
     })
-    .catch(err => alert("Erro ao carregar dados"));
+    .catch(() => alert("Erro ao carregar dados"));
 }
 
 function aplicarFiltros() {
@@ -294,4 +443,3 @@ filtroDataFim.onchange = aplicarFiltros;
 
 </body>
 </html>
-
