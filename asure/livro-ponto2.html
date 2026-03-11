@@ -283,16 +283,21 @@ const mensagem = document.getElementById("mensagem");
 overlay.style.display="flex";
 mensagem.innerText="Enviando registro...";
 
-const assinatura = canvas.toDataURL("image/jpeg",0.2);
+/* compressão segura da assinatura */
+const assinatura = canvas.toDataURL("image/png");
+
+const dados = new URLSearchParams();
+dados.append("nome", nome);
+dados.append("unidade", unidade);
+dados.append("assinatura", assinatura);
 
 fetch("https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec",{
 method:"POST",
 mode:"no-cors",
-body:new URLSearchParams({
-nome:nome,
-unidade:unidade,
-assinatura:assinatura
-})
+headers:{
+"Content-Type":"application/x-www-form-urlencoded"
+},
+body:dados
 })
 .finally(()=>{
 
@@ -312,3 +317,4 @@ window.location.href="index.html";
 </body>
 
 </html>
+
