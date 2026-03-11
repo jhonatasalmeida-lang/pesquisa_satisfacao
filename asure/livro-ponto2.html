@@ -215,8 +215,8 @@ button {
 </div>
 
 <div class="loading-overlay" id="overlay">
-<div class="spinner"></div>
-Enviando registro...
+<div class="spinner" id="spinner"></div>
+<div id="mensagem">Enviando registro...</div>
 </div>
 
 <script>
@@ -276,7 +276,12 @@ return;
 
 enviando = true;
 
-document.getElementById("overlay").style.display="flex";
+const overlay = document.getElementById("overlay");
+const spinner = document.getElementById("spinner");
+const mensagem = document.getElementById("mensagem");
+
+overlay.style.display="flex";
+mensagem.innerText="Enviando registro...";
 
 const assinatura = canvas.toDataURL("image/jpeg",0.2);
 
@@ -290,9 +295,14 @@ assinatura:assinatura
 })
 })
 .finally(()=>{
+
+spinner.style.display="none";
+mensagem.innerText="✅ Registro realizado com sucesso!";
+
 setTimeout(()=>{
 window.location.href="index.html";
-},800);
+},1500);
+
 });
 
 }
@@ -300,4 +310,5 @@ window.location.href="index.html";
 </script>
 
 </body>
+
 </html>
