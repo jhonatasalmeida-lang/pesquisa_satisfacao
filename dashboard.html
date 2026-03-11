@@ -189,9 +189,9 @@ fetch(API)
 dados=json.map(d=>({
 data:new Date(d.Data),
 nota:Number(d.Nota),
-nucleo:d["Núcleo"],
-obs:d["Observação"],
-site:d.Site
+nucleo:d["Núcleo"] || d["Nucleo"],
+obs:d["Observação"] || d["Observacao"],
+site:d["Site"] || d["site"]
 }));
 
 inicializarFiltros();
