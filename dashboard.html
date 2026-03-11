@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<title>Dashboard NPS</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+font-family:Segoe UI;
+background:#f4f6f9;
+padding:30px;
+}
+
+.dashboard{
+max-width:1200px;
+margin:auto;
+}
+
+.cards{
+display:flex;
+gap:20px;
+margin-bottom:30px;
+}
+
+.card{
+flex:1;
+background:#fff;
+padding:20px;
+border-radius:10px;
+text-align:center;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+canvas{
+background:#fff;
+padding:20px;
+border-radius:10px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+margin-bottom:30px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+<h1>📊 Dashboard Pesquisa de Satisfação</h1>
+
+<div class="cards">
+
+<div class="card">
+<h2 id="media">0</h2>
+<p>Média geral</p>
+</div>
+
+<div class="card">
+<h2 id="total">0</h2>
+<p>Total respostas</p>
+</div>
+
+</div>
+
+<canvas id="graficoMes"></canvas>
+
+<canvas id="graficoNucleo"></canvas>
+
+</div>
+
+<script>
+
+const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmknBfbYS5qbvJqTKZK0ZKXZE2xs-HSl0kxYjAxoVD/exec";
+
+
+fetch(API)
+
+.then(res=>res.json())
+
+.then(dados=>{
+
+dados = dados.map(d=>({
+data:new Date(d.Data),
+nota:Number(d.Nota),
+nucleo:d.Núcleo
+}));
+
+/* CARDS */
+
+let total=dados.length;
+
+let media=dados.reduce((s,d)=>s+d.nota,0)/total;
+
+document.getElementById("media").innerText=media.toFixed(1);
+
+document.getElementById("total").innerText=total;
+
+
+/* MÉDIA POR MÊS */
+
+const meses={};
+
+dados.forEach(d=>{
+
+let m=d.data.getMonth()+1;
+
+if(!meses[m])meses[m]=[];
+
+meses[m].push(d.nota);
+
+});
+
+const labelsMes=Object.keys(meses);
+
+const mediasMes=labelsMes.map(m=>{
+
+let arr=meses[m];
+
+return arr.reduce((a,b)=>a+b)/arr.length;
+
+});
+
+
+new Chart(document.getElementById("graficoMes"),{
+
+type:"line",
+
+data:{
+
+labels:labelsMes,
+
+datasets:[{
+
+label:"Média por mês",
+
+data:mediasMes,
+
+borderColor:"#1fb6a6"
+
+}]
+
+}
+
+});
+
+
+/* MÉDIA POR NÚCLEO */
+
+const nucleoDados={};
+
+dados.forEach(d=>{
+
+if(!nucleoDados[d.nucleo])nucleoDados[d.nucleo]=[];
+
+nucleoDados[d.nucleo].push(d.nota);
+
+});
+
+const labelsN=Object.keys(nucleoDados);
+
+const mediasN=labelsN.map(n=>{
+
+let arr=nucleoDados[n];
+
+return arr.reduce((a,b)=>a+b)/arr.length;
+
+});
+
+
+new Chart(document.getElementById("graficoNucleo"),{
+
+type:"bar",
+
+data:{
+
+labels:labelsN,
+
+datasets:[{
+
+label:"Média por núcleo",
+
+data:mediasN,
+
+backgroundColor:"#3498db"
+
+}]
+
+}
+
+});
+
+});
+
+</script>
+
+</body>
+
+</html>
