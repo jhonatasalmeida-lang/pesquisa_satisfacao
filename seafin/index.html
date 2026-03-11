@@ -279,9 +279,6 @@ textarea:focus-visible,
       <b>De 0 a 10, qual sua avaliação para os serviços prestados pela Unidade Regional de Ensino de Caieiras?</b>
       <div id="npsOptions" class="nps-options"></div>
     </div>
-
-    <input type="hidden" id="site" value="Site" />
-
     <button class="nps-submit" onclick="enviarNPS()">Enviar</button>
   </div>
 
@@ -326,7 +323,6 @@ textarea:focus-visible,
       var nota = window.NPS_WIDGET.notaSelecionada;
       var nucleo = document.querySelector('input[name="nucleo"]:checked');
       var obs   = document.getElementById('observacao').value;
-	  var site = document.getElementById('site').value;
 
       if (nota === null) {
         alert("Selecione uma nota de 0 a 10.");
