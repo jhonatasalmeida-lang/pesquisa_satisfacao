@@ -6,6 +6,7 @@
 <title>Registro de Presença Digital</title>
 
 <style>
+
 body {
   margin:0;
   font-family: "Segoe UI", Arial, sans-serif;
@@ -36,15 +37,6 @@ label {
   font-weight:600;
   margin-top:12px;
   display:block;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 16px;
-  box-sizing: border-box;
 }
 
 input, select {
@@ -88,177 +80,224 @@ button {
 .btn-send { background:#2ecc71; color:#fff; }
 .btn-back { background:#34495e; color:#fff; margin-top:16px; }
 
-.loading {
+.loading-overlay {
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.65);
   display:none;
-  text-align:center;
-  margin-top:10px;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  color:#fff;
+  font-size:18px;
   font-weight:600;
+  z-index:9999;
 }
+
+.spinner {
+  width:50px;
+  height:50px;
+  border:5px solid #fff;
+  border-top:5px solid #1fb6a6;
+  border-radius:50%;
+  animation:girar 1s linear infinite;
+  margin-bottom:15px;
+}
+
+@keyframes girar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 </style>
 </head>
+
 <body>
 
 <div class="container">
-  <h1>Registro de Presença Digital</h1>
 
-  <label>Nome completo</label>
-  <input type="text" id="nome" placeholder="Digite seu nome completo">
+<h1>Registro de Presença Digital</h1>
 
-  <label>Unidade Escolar</label>
-  <!-- COLE AQUI O SELECT DAS UNIDADES QUE TE PASSEI -->
-  
-  <select id="unidade" required>
-  <option value="">Selecione a unidade</option>
+<label>Nome completo</label>
+<input type="text" id="nome" placeholder="Digite seu nome completo">
 
-  <option>ESCOLA ESTADUAL ADAIL JARBAS DUCLOS</option>
-  <option>ESCOLA ESTADUAL AFONSO MORENO</option>
-  <option>ESCOLA ESTADUAL ALADINO POLON</option>
-  <option>ESCOLA ESTADUAL ALBERTO GRAF CAPITAO</option>
-  <option>ESCOLA ESTADUAL ALBINO FIORE</option>
-  <option>ESCOLA ESTADUAL ALFRIED THEODOR WEISZFLOG</option>
-  <option>ESCOLA ESTADUAL ANA MARIA GARRIDO ORLANDIN PROFESSORA</option>
-  <option>ESCOLA ESTADUAL APARECIDO ROBERTO TONELLOTTI PROFESSOR</option>
-  <option>ESCOLA ESTADUAL ARMANDO SESTINI</option>
-  <option>ESCOLA ESTADUAL ARTHUR WEINGRILL</option>
-  <option>ESCOLA ESTADUAL AZEVEDO SOARES</option>
-  <option>ESCOLA ESTADUAL BAIRRO DO ITAIM</option>
-  <option>ESCOLA ESTADUAL BAIRRO JUNDIAIZINHO</option>
-  <option>ESCOLA ESTADUAL BELEM DA SERRA</option>
-  <option>ESCOLA ESTADUAL BENEDITO APARECIDO TAVARES PROFESSOR</option>
-  <option>ESCOLA ESTADUAL BENEDITO FAGUNDES MARQUES</option>
-  <option>ESCOLA ESTADUAL BUENO DE AZEVEDO FILHO PROFESSOR</option>
-  <option>ESCOLA ESTADUAL CARLOS AUGUSTO DE PADUA FLEURY PROFESSOR</option>
-  <option>ESCOLA ESTADUAL CELESTINA VALENTE LENGENFELDER PROFESSORA</option>
-  <option>ESCOLA ESTADUAL CHACARA CAMPONESA - JARDIM VASSOURAS</option>
-  <option>ESCOLA ESTADUAL DOMINGOS CAMBIAGHI PROFESSOR</option>
-  <option>ESCOLA ESTADUAL ELCIO JOSE PEREIRA CONTRIM PROFESSOR</option>
-  <option>ESCOLA ESTADUAL ELVIRA PARADA MANGA PROFESSORA</option>
-  <option>ESCOLA ESTADUAL FRANCISCO GONCALVES VIEIRA PROFESSOR</option>
-  <option>ESCOLA ESTADUAL HERMELINA DE ALBUQUERQUE PASSARELLA PROFESSORA</option>
-  <option>ESCOLA ESTADUAL IRACI SARTORI VIEIRA DA SILVA PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ISAIAS LUIZ MATIAZZO</option>
-  <option>ESCOLA ESTADUAL ISAURA DE MIRANDA BOTTO PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ISAURA VALENTINI HANSER PROFESSORA</option>
-  <option>ESCOLA ESTADUAL IVONE DOS ANJOS DA SILVA CAMPOS PROFA</option>
-  <option>ESCOLA ESTADUAL JARDIM ALEGRIA II</option>
-  <option>ESCOLA ESTADUAL JARDIM DAS ROSAS</option>
-  <option>ESCOLA ESTADUAL JARDIM SAO FRANCISCO</option>
-  <option>ESCOLA ESTADUAL JARDIM SILVIA II</option>
-  <option>ESCOLA ESTADUAL JOAQUIM MARQUES DA SILVA SOBRINHO TENENTE</option>
-  <option>ESCOLA ESTADUAL JOCIMARA VIEIRA DA SILVA PROFA</option>
-  <option>ESCOLA ESTADUAL JOSE CARLOS DA SILVA JUNIOR</option>
-  <option>ESCOLA ESTADUAL JOSE DE BARROS MARTINS EDITOR</option>
-  <option>ESCOLA ESTADUAL JOSE PARADA PROFESSOR</option>
-  <option>ESCOLA ESTADUAL JOSE ROBERTO MELCHIOR DOUTOR</option>
-  <option>ESCOLA ESTADUAL KATIA MARIA TARIFA LEME TONELLI PROFESSORA</option>
-  <option>ESCOLA ESTADUAL LENITA CORREA CAMARGO PROFESSORA</option>
-  <option>ESCOLA ESTADUAL LUIZ ALEXANDRE DOS SANTOS VEREADOR</option>
-  <option>ESCOLA ESTADUAL LYDIA SCALET WALKER PROFESSORA</option>
-  <option>ESCOLA ESTADUAL MARIA ZEZA GOMES DE OLIVEIRA</option>
-  <option>ESCOLA ESTADUAL MARIO TOLEDO DE MORAES DOUTOR</option>
-  <option>ESCOLA ESTADUAL NAIR HANNICKEL ROMARO</option>
-  <option>ESCOLA ESTADUAL NELSON MANZANARES DOUTOR</option>
-  <option>ESCOLA ESTADUAL NIDE ZAIM CARDOSO PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ODARICO OLIVEIRA NASCIMENTO PROFESSOR</option>
-  <option>ESCOLA ESTADUAL OLINDO DARTORA DOUTORA</option>
-  <option>ESCOLA ESTADUAL OTTO WEISZFLOG</option>
-  <option>ESCOLA ESTADUAL OZILDE ALBUQUERQUE PASSARELLA DOUTOR</option>
-  <option>ESCOLA ESTADUAL PARQUE CENTO E VINTE II</option>
-  <option>ESCOLA ESTADUAL PAULO DUARTE</option>
-  <option>ESCOLA ESTADUAL PEDRO GALRAO DO NASCIMENTO</option>
-  <option>ESCOLA ESTADUAL PEDRO LELIS DE SOUZA PREFEITO</option>
-  <option>ESCOLA ESTADUAL PEDRO PAULO DE AGUIAR</option>
-  <option>ESCOLA ESTADUAL PIETRO PETRI</option>
-  <option>ESCOLA ESTADUAL RITUCO MITANI PROFESSORA</option>
-  <option>ESCOLA ESTADUAL ROGERIO LEVORIN PROFESSOR</option>
-  <option>ESCOLA ESTADUAL SUZANA DIAS</option>
-  <option>ESCOLA ESTADUAL ULYSSES SANCHES RAMIRES PROFESSOR</option>
-  <option>ESCOLA ESTADUAL VINCENZO LOBASSI</option>
-  <option>ESCOLA ESTADUAL WALTER RIBAS DE ANDRADE PROFESSOR</option>
-  <option>ESCOLA ESTADUAL WALTER WEISZFLOG</option>
-  <option>ESCOLA ESTADUAL ZILTON BICUDO PROFESSOR</option>
+<label>Unidade Escolar</label>
+
+<select id="unidade" required>
+<option value="">Selecione a unidade</option>
+
+<option>ESCOLA ESTADUAL ADAIL JARBAS DUCLOS</option>
+<option>ESCOLA ESTADUAL AFONSO MORENO</option>
+<option>ESCOLA ESTADUAL ALADINO POLON</option>
+<option>ESCOLA ESTADUAL ALBERTO GRAF CAPITAO</option>
+<option>ESCOLA ESTADUAL ALBINO FIORE</option>
+<option>ESCOLA ESTADUAL ALFRIED THEODOR WEISZFLOG</option>
+<option>ESCOLA ESTADUAL ANA MARIA GARRIDO ORLANDIN PROFESSORA</option>
+<option>ESCOLA ESTADUAL APARECIDO ROBERTO TONELLOTTI PROFESSOR</option>
+<option>ESCOLA ESTADUAL ARMANDO SESTINI</option>
+<option>ESCOLA ESTADUAL ARTHUR WEINGRILL</option>
+<option>ESCOLA ESTADUAL AZEVEDO SOARES</option>
+<option>ESCOLA ESTADUAL BAIRRO DO ITAIM</option>
+<option>ESCOLA ESTADUAL BAIRRO JUNDIAIZINHO</option>
+<option>ESCOLA ESTADUAL BELEM DA SERRA</option>
+<option>ESCOLA ESTADUAL BENEDITO APARECIDO TAVARES PROFESSOR</option>
+<option>ESCOLA ESTADUAL BENEDITO FAGUNDES MARQUES</option>
+<option>ESCOLA ESTADUAL BUENO DE AZEVEDO FILHO PROFESSOR</option>
+<option>ESCOLA ESTADUAL CARLOS AUGUSTO DE PADUA FLEURY PROFESSOR</option>
+<option>ESCOLA ESTADUAL CELESTINA VALENTE LENGENFELDER PROFESSORA</option>
+<option>ESCOLA ESTADUAL CHACARA CAMPONESA - JARDIM VASSOURAS</option>
+<option>ESCOLA ESTADUAL DOMINGOS CAMBIAGHI PROFESSOR</option>
+<option>ESCOLA ESTADUAL ELCIO JOSE PEREIRA CONTRIM PROFESSOR</option>
+<option>ESCOLA ESTADUAL ELVIRA PARADA MANGA PROFESSORA</option>
+<option>ESCOLA ESTADUAL FRANCISCO GONCALVES VIEIRA PROFESSOR</option>
+<option>ESCOLA ESTADUAL HERMELINA DE ALBUQUERQUE PASSARELLA PROFESSORA</option>
+<option>ESCOLA ESTADUAL IRACI SARTORI VIEIRA DA SILVA PROFESSORA</option>
+<option>ESCOLA ESTADUAL ISAIAS LUIZ MATIAZZO</option>
+<option>ESCOLA ESTADUAL ISAURA DE MIRANDA BOTTO PROFESSORA</option>
+<option>ESCOLA ESTADUAL ISAURA VALENTINI HANSER PROFESSORA</option>
+<option>ESCOLA ESTADUAL IVONE DOS ANJOS DA SILVA CAMPOS PROFA</option>
+<option>ESCOLA ESTADUAL JARDIM ALEGRIA II</option>
+<option>ESCOLA ESTADUAL JARDIM DAS ROSAS</option>
+<option>ESCOLA ESTADUAL JARDIM SAO FRANCISCO</option>
+<option>ESCOLA ESTADUAL JARDIM SILVIA II</option>
+<option>ESCOLA ESTADUAL JOAQUIM MARQUES DA SILVA SOBRINHO TENENTE</option>
+<option>ESCOLA ESTADUAL JOCIMARA VIEIRA DA SILVA PROFA</option>
+<option>ESCOLA ESTADUAL JOSE CARLOS DA SILVA JUNIOR</option>
+<option>ESCOLA ESTADUAL JOSE DE BARROS MARTINS EDITOR</option>
+<option>ESCOLA ESTADUAL JOSE PARADA PROFESSOR</option>
+<option>ESCOLA ESTADUAL JOSE ROBERTO MELCHIOR DOUTOR</option>
+<option>ESCOLA ESTADUAL KATIA MARIA TARIFA LEME TONELLI PROFESSORA</option>
+<option>ESCOLA ESTADUAL LENITA CORREA CAMARGO PROFESSORA</option>
+<option>ESCOLA ESTADUAL LUIZ ALEXANDRE DOS SANTOS VEREADOR</option>
+<option>ESCOLA ESTADUAL LYDIA SCALET WALKER PROFESSORA</option>
+<option>ESCOLA ESTADUAL MARIA ZEZA GOMES DE OLIVEIRA</option>
+<option>ESCOLA ESTADUAL MARIO TOLEDO DE MORAES DOUTOR</option>
+<option>ESCOLA ESTADUAL NAIR HANNICKEL ROMARO</option>
+<option>ESCOLA ESTADUAL NELSON MANZANARES DOUTOR</option>
+<option>ESCOLA ESTADUAL NIDE ZAIM CARDOSO PROFESSORA</option>
+<option>ESCOLA ESTADUAL ODARICO OLIVEIRA NASCIMENTO PROFESSOR</option>
+<option>ESCOLA ESTADUAL OLINDO DARTORA DOUTORA</option>
+<option>ESCOLA ESTADUAL OTTO WEISZFLOG</option>
+<option>ESCOLA ESTADUAL OZILDE ALBUQUERQUE PASSARELLA DOUTOR</option>
+<option>ESCOLA ESTADUAL PARQUE CENTO E VINTE II</option>
+<option>ESCOLA ESTADUAL PAULO DUARTE</option>
+<option>ESCOLA ESTADUAL PEDRO GALRAO DO NASCIMENTO</option>
+<option>ESCOLA ESTADUAL PEDRO LELIS DE SOUZA PREFEITO</option>
+<option>ESCOLA ESTADUAL PEDRO PAULO DE AGUIAR</option>
+<option>ESCOLA ESTADUAL PIETRO PETRI</option>
+<option>ESCOLA ESTADUAL RITUCO MITANI PROFESSORA</option>
+<option>ESCOLA ESTADUAL ROGERIO LEVORIN PROFESSOR</option>
+<option>ESCOLA ESTADUAL SUZANA DIAS</option>
+<option>ESCOLA ESTADUAL ULYSSES SANCHES RAMIRES PROFESSOR</option>
+<option>ESCOLA ESTADUAL VINCENZO LOBASSI</option>
+<option>ESCOLA ESTADUAL WALTER RIBAS DE ANDRADE PROFESSOR</option>
+<option>ESCOLA ESTADUAL WALTER WEISZFLOG</option>
+<option>ESCOLA ESTADUAL ZILTON BICUDO PROFESSOR</option>
+
 </select>
 
-  <label>Visto / Assinatura</label>
-  <div class="canvas-box">
-    <canvas id="assinatura"></canvas>
-  </div>
+<label>Visto / Assinatura</label>
 
-  <div class="actions">
-    <button class="btn-clear" onclick="limpar()">Limpar</button>
-    <button class="btn-send" onclick="enviar()">Registrar</button>
-  </div>
+<div class="canvas-box">
+<canvas id="assinatura"></canvas>
+</div>
 
-  <div class="loading" id="loading">Enviando registro...</div>
+<div class="actions">
+<button class="btn-clear" onclick="limpar()">Limpar</button>
+<button class="btn-send" onclick="enviar()">Registrar</button>
+</div>
 
-  <button class="btn-back" onclick="window.location.href='index.html'">⬅ Voltar</button>
+<button class="btn-back" onclick="window.location.href='index.html'">⬅ Voltar</button>
+
+</div>
+
+<div class="loading-overlay" id="overlay">
+<div class="spinner"></div>
+Enviando registro...
 </div>
 
 <script>
+
 const canvas = document.getElementById("assinatura");
 const ctx = canvas.getContext("2d");
-let desenhando = false;
 
-function resizeCanvas() {
-  canvas.width = canvas.offsetWidth;
-  canvas.height = canvas.offsetHeight;
+let desenhando = false;
+let assinaturaFeita = false;
+let enviando = false;
+
+function resizeCanvas(){
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
 }
+
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-canvas.addEventListener("pointerdown", e => {
-  desenhando = true;
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
+canvas.addEventListener("pointerdown", e=>{
+desenhando = true;
+ctx.beginPath();
+ctx.moveTo(e.offsetX, e.offsetY);
 });
 
-canvas.addEventListener("pointermove", e => {
-  if (!desenhando) return;
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
+canvas.addEventListener("pointermove", e=>{
+if(!desenhando) return;
+ctx.lineTo(e.offsetX, e.offsetY);
+ctx.stroke();
+assinaturaFeita = true;
 });
 
-canvas.addEventListener("pointerup", () => desenhando = false);
-canvas.addEventListener("pointerleave", () => desenhando = false);
+canvas.addEventListener("pointerup", ()=> desenhando=false);
+canvas.addEventListener("pointerleave", ()=> desenhando=false);
 
-function limpar() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function limpar(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+assinaturaFeita=false;
 }
 
-function enviar() {
-  const nome = document.getElementById("nome").value.trim();
-  const unidade = document.getElementById("unidade").value;
-  const assinatura = canvas.toDataURL("image/png");
+function enviar(){
 
-  if (!nome || !unidade) {
-    alert("Preencha nome e unidade.");
-    return;
-  }
+if(enviando) return;
 
-  document.getElementById("loading").style.display = "block";
+const nome = document.getElementById("nome").value.trim();
+const unidade = document.getElementById("unidade").value;
 
-  fetch("https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec", {
-    method: "POST",
-    mode: "no-cors",
-    body: new URLSearchParams({
-      nome: nome,
-      unidade: unidade,
-      assinatura: assinatura
-    })
-  })
-  .then(() => {
-alert("Registro realizado com sucesso!");
-
-setTimeout(() => {
-  window.location.href = "index.html";
-}, 1500);
-  })
-  .finally(() => {
-    document.getElementById("loading").style.display = "none";
-  });
+if(!nome || !unidade){
+alert("Preencha nome e unidade.");
+return;
 }
+
+if(!assinaturaFeita){
+alert("Por favor, realize a assinatura antes de registrar.");
+return;
+}
+
+enviando = true;
+
+document.getElementById("overlay").style.display="flex";
+
+const assinatura = canvas.toDataURL("image/jpeg",0.2);
+
+fetch("https://script.google.com/macros/s/AKfycbyyZq4OSr76GPhnitpnallY1jok8aqkL70df3Tv-kgTiooiEMMBSqBKuPnFtN9W6_Ys/exec",{
+method:"POST",
+mode:"no-cors",
+body:new URLSearchParams({
+nome:nome,
+unidade:unidade,
+assinatura:assinatura
+})
+})
+.finally(()=>{
+setTimeout(()=>{
+window.location.href="index.html";
+},800);
+});
+
+}
+
 </script>
 
 </body>
 </html>
-
