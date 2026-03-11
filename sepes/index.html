@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Registro de Presença</title>
+<title>Pesquisa de Satisfação</title>
 
 <style>
 
@@ -23,42 +23,56 @@ background:#ffffff;
 border-radius:20px;
 padding:40px;
 width:100%;
-max-width:600px;
+max-width:900px;
 text-align:center;
 box-shadow:0 15px 35px rgba(0,0,0,0.25);
 }
 
 h1{
 color:#0f4c81;
-margin-bottom:10px;
+margin-bottom:8px;
+}
+
+h2{
+margin-top:0;
+color:#2c3e50;
 }
 
 .subtitulo{
 color:#555;
-margin-bottom:35px;
+margin-bottom:40px;
+font-size:18px;
 }
 
 .menu{
-display:flex;
-flex-direction:column;
-gap:18px;
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:25px;
 }
 
 .botao{
-display:block;
-padding:20px;
-border-radius:12px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
 text-decoration:none;
-font-size:18px;
-font-weight:700;
+border-radius:18px;
 color:#fff;
+font-weight:800;
+font-size:22px;
+height:160px;
 transition:0.25s;
-box-shadow:0 6px 12px rgba(0,0,0,0.2);
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+.botao span{
+font-size:40px;
+margin-bottom:10px;
 }
 
 .botao:hover{
-transform:translateY(-3px);
-box-shadow:0 10px 18px rgba(0,0,0,0.25);
+transform:translateY(-5px);
+box-shadow:0 15px 28px rgba(0,0,0,0.3);
 }
 
 .seafin{
@@ -74,9 +88,24 @@ background:#8e44ad;
 }
 
 .rodape{
-margin-top:30px;
+margin-top:35px;
 font-size:14px;
 color:#777;
+}
+
+/* Responsivo */
+
+@media(max-width:700px){
+
+.menu{
+grid-template-columns:1fr;
+}
+
+.botao{
+height:120px;
+font-size:20px;
+}
+
 }
 
 </style>
@@ -86,27 +115,31 @@ color:#777;
 
 <div class="container">
 
-<h1>Registro de Presença</h1>
-<p class="subtitulo">Selecione o setor para registrar sua presença</p>
+<h1>Unidade Regional de Ensino de Caieiras</h1>
+<h2>Pesquisa de Satisfação</h2>
+<p class="subtitulo">Selecione a Unidade que realizou o atendimento</p>
 
 <div class="menu">
 
 <a href="sepes.html" class="botao seafin">
-🙋SEPES
+<span>🙋</span>
+SEPES
 </a>
 
 <a href="sefrep.html" class="botao sefin">
-💵 SEFREP
+<span>💵</span>
+SEFREP
 </a>
 
 <a href="seape.html" class="botao secomse">
-📢 SEAPE
+<span>📢</span>
+SEAPE
 </a>
 
 </div>
 
 <div class="rodape">
-Sistema de Presença Digital
+Sistema de Avaliação - URE de Caieiras
 </div>
 
 </div>
