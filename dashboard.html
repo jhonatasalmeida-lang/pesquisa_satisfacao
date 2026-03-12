@@ -3,16 +3,23 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Dashboard NPS - URE Caieiras</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <style>
 
 body{
 font-family:Segoe UI,Arial;
-background:#f3f4f6;
+background:#eef1f5;
 margin:0;
 padding:30px;
 color:#2c3e50;
@@ -24,44 +31,53 @@ margin-bottom:25px;
 }
 
 .dashboard{
-max-width:1350px;
+max-width:1400px;
 margin:auto;
 }
 
 .cards{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:20px;
-margin-bottom:25px;
+margin-bottom:30px;
 }
 
 .card{
-background:#fff;
-border-radius:12px;
-padding:20px;
-box-shadow:0 3px 10px rgba(0,0,0,0.1);
+border-radius:14px;
+padding:25px;
+color:white;
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
 text-align:center;
 }
 
 .card h2{
+font-size:34px;
 margin:0;
-font-size:30px;
 }
 
 .card span{
-color:#777;
 font-size:14px;
+opacity:.9;
 }
+
+.media{background:#3498db;}
+.nps{background:#1abc9c;}
+.prom{background:#27ae60;}
+.det{background:#e74c3c;}
 
 .filtros{
 display:flex;
 gap:15px;
 flex-wrap:wrap;
-margin-bottom:20px;
+margin-bottom:25px;
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
 select,input{
-padding:8px;
+padding:8px 10px;
 border-radius:6px;
 border:1px solid #ccc;
 }
@@ -74,34 +90,30 @@ margin-bottom:30px;
 }
 
 .grafico{
-background:#fff;
+background:white;
 padding:20px;
 border-radius:12px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:#fff;
+table.dataTable{
+background:white;
 border-radius:10px;
 overflow:hidden;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
 }
 
-th{
-background:#34495e;
-color:#fff;
-padding:10px;
-}
-
-td{
-padding:8px;
-border-bottom:1px solid #eee;
-}
-
-tbody tr:hover{
-background:#f5f5f5;
+.loader{
+position:fixed;
+top:0;
+left:0;
+right:0;
+bottom:0;
+background:#ffffff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:20px;
+z-index:999;
 }
 
 </style>
@@ -110,28 +122,30 @@ background:#f5f5f5;
 
 <body>
 
+<div class="loader" id="loader">Carregando dados...</div>
+
 <div class="dashboard">
 
 <h1>📊 Dashboard Pesquisa de Satisfação</h1>
 
 <div class="cards">
 
-<div class="card">
+<div class="card media">
 <h2 id="media">0</h2>
 <span>Média Geral</span>
 </div>
 
-<div class="card">
+<div class="card nps">
 <h2 id="nps">0</h2>
 <span>NPS</span>
 </div>
 
-<div class="card">
+<div class="card prom">
 <h2 id="prom">0%</h2>
 <span>Promotores</span>
 </div>
 
-<div class="card">
+<div class="card det">
 <h2 id="det">0%</h2>
 <span>Detratores</span>
 </div>
@@ -149,6 +163,8 @@ background:#f5f5f5;
 </select>
 
 <input type="text" id="buscaObs" placeholder="Pesquisar observação">
+
+<button onclick="exportarCSV()">Exportar CSV</button>
 
 </div>
 
@@ -168,7 +184,7 @@ background:#f5f5f5;
 
 </div>
 
-<table>
+<table id="tabelaDados">
 
 <thead>
 <tr>
@@ -188,12 +204,13 @@ background:#f5f5f5;
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmknBfbYS5qbvJqTKZK0ZKXZE2xs-HSl0kxYjAxoVD/exec";
+const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmknBfbYS5qbvJqTKZKXZE2xs-HSl0kxYjAxoVD/exec";
 
 let dados=[];
 let chartMes;
 let chartNucleo;
 let chartNPS;
+let tabela;
 
 fetch(API)
 .then(r=>r.json())
@@ -205,9 +222,11 @@ data:new Date(d.Data || ""),
 nota:Number(d.Nota || 0),
 nucleo:d["Núcleo"] || d["Nucleo"] || "Não informado",
 obs:d["Observação"] || d["Observacao"] || "",
-site:d["Site"] || d["site"] || ""
+site:d["Site"] || ""
 
 }));
+
+document.getElementById("loader").style.display="none";
 
 inicializarFiltros();
 render();
@@ -224,35 +243,25 @@ meses.add(d.data.getMonth()+1);
 nucleos.add(d.nucleo);
 });
 
-const fMes=document.getElementById("filtroMes");
-
 meses.forEach(m=>{
-let op=document.createElement("option");
-op.value=m;
-op.text="Mês "+m;
-fMes.appendChild(op);
+$("#filtroMes").append(`<option value="${m}">Mês ${m}</option>`);
 });
-
-const fN=document.getElementById("filtroNucleo");
 
 nucleos.forEach(n=>{
-let op=document.createElement("option");
-op.value=n;
-op.text=n;
-fN.appendChild(op);
+$("#filtroNucleo").append(`<option value="${n}">${n}</option>`);
 });
 
-fMes.onchange=render;
-fN.onchange=render;
-document.getElementById("buscaObs").oninput=render;
+$("#filtroMes").change(render);
+$("#filtroNucleo").change(render);
+$("#buscaObs").on("input",render);
 
 }
 
 function filtrar(){
 
-const mes=document.getElementById("filtroMes").value;
-const nucleo=document.getElementById("filtroNucleo").value;
-const busca=document.getElementById("buscaObs").value.toLowerCase();
+const mes=$("#filtroMes").val();
+const nucleo=$("#filtroNucleo").val();
+const busca=$("#buscaObs").val().toLowerCase();
 
 return dados.filter(d=>{
 
@@ -274,7 +283,7 @@ cards(f);
 graficoNPS(f);
 graficoMes(f);
 graficoNucleo(f);
-tabela(f);
+tabelaDados(f);
 
 }
 
@@ -292,10 +301,10 @@ let detP=(det/f.length)*100;
 
 let nps=promP-detP;
 
-document.getElementById("media").innerText=media.toFixed(1);
-document.getElementById("prom").innerText=promP.toFixed(0)+"%";
-document.getElementById("det").innerText=detP.toFixed(0)+"%";
-document.getElementById("nps").innerText=nps.toFixed(0);
+$("#media").text(media.toFixed(1));
+$("#prom").text(promP.toFixed(0)+"%");
+$("#det").text(detP.toFixed(0)+"%");
+$("#nps").text(nps.toFixed(0));
 
 }
 
@@ -315,7 +324,7 @@ data:{
 labels:["Promotores","Neutros","Detratores"],
 datasets:[{
 data:[prom,neut,det],
-backgroundColor:["#2ecc71","#f1c40f","#e74c3c"]
+backgroundColor:["#27ae60","#f1c40f","#e74c3c"]
 }]
 }
 });
@@ -350,7 +359,7 @@ labels:labels,
 datasets:[{
 label:"Média por mês",
 data:medias,
-borderColor:"#1fb6a6",
+borderColor:"#3498db",
 tension:.3
 }]
 }
@@ -385,33 +394,59 @@ labels:labels,
 datasets:[{
 label:"Média por núcleo",
 data:medias,
-backgroundColor:"#3498db"
+backgroundColor:"#8e44ad"
 }]
 }
 });
 
 }
 
-function tabela(f){
+function tabelaDados(f){
 
-const tbody=document.getElementById("tabela");
-tbody.innerHTML="";
+const tbody=$("#tabela");
+tbody.html("");
 
 f.forEach(d=>{
 
-let tr=document.createElement("tr");
-
-tr.innerHTML=`
+tbody.append(`
+<tr>
 <td>${d.data.toLocaleDateString()}</td>
 <td>${d.nucleo}</td>
 <td>${d.nota}</td>
 <td>${d.obs || "-"}</td>
 <td>${d.site}</td>
-`;
-
-tbody.appendChild(tr);
+</tr>
+`);
 
 });
+
+if(tabela){
+tabela.destroy();
+}
+
+tabela=$("#tabelaDados").DataTable({
+pageLength:10,
+lengthMenu:[10,25,50,100],
+language:{
+url:"https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+}
+});
+
+}
+
+function exportarCSV(){
+
+let csv="Data,Nucleo,Nota,Observacao,Site\n";
+
+dados.forEach(d=>{
+csv+=`${d.data.toLocaleDateString()},${d.nucleo},${d.nota},"${d.obs}",${d.site}\n`;
+});
+
+let blob=new Blob([csv]);
+let a=document.createElement("a");
+a.href=URL.createObjectURL(blob);
+a.download="dados_nps.csv";
+a.click();
 
 }
 
