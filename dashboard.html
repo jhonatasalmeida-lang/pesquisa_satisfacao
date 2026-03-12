@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <title>Dashboard NPS - URE Caieiras</title>
 
@@ -19,13 +20,13 @@
 
 body{
 font-family:Segoe UI;
-background:#eef2f7;
+background:#f3f6fb;
 margin:0;
 padding:30px;
 }
 
 .dashboard{
-max-width:1600px;
+max-width:1700px;
 margin:auto;
 }
 
@@ -37,13 +38,13 @@ margin-bottom:20px;
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:20px;
-margin-bottom:20px;
+margin-bottom:25px;
 }
 
 .card{
 background:white;
 padding:25px;
-border-radius:12px;
+border-radius:10px;
 box-shadow:0 3px 10px rgba(0,0,0,0.08);
 text-align:center;
 }
@@ -57,10 +58,10 @@ font-size:34px;
 display:flex;
 gap:10px;
 flex-wrap:wrap;
-margin-bottom:25px;
 background:white;
 padding:15px;
 border-radius:10px;
+margin-bottom:25px;
 }
 
 select,input{
@@ -79,7 +80,7 @@ margin-bottom:30px;
 .box{
 background:white;
 padding:20px;
-border-radius:12px;
+border-radius:10px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
@@ -93,6 +94,14 @@ display:inline-block;
 font-size:13px;
 }
 
+.legenda{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+font-size:14px;
+}
+
 </style>
 
 </head>
@@ -101,28 +110,36 @@ font-size:13px;
 
 <div class="dashboard">
 
-<h1>📊 Dashboard NPS - URE Caieiras</h1>
+<h1>📊 Dashboard NPS</h1>
+
+<div class="legenda">
+<b>Legenda NPS</b><br>
+Promotores: notas 9 e 10<br>
+Neutros: notas 7 e 8<br>
+Detratores: notas de 0 a 6<br><br>
+<b>NPS = % Promotores − % Detratores</b>
+</div>
 
 <div class="cards">
 
 <div class="card">
 <h2 id="media">0</h2>
-<span>Média Geral</span>
+Média Geral
 </div>
 
 <div class="card">
 <h2 id="nps">0</h2>
-<span>NPS</span>
+NPS
 </div>
 
 <div class="card">
 <h2 id="prom">0%</h2>
-<span>Promotores</span>
+Promotores
 </div>
 
 <div class="card">
 <h2 id="det">0%</h2>
-<span>Detratores</span>
+Detratores
 </div>
 
 </div>
@@ -150,6 +167,10 @@ font-size:13px;
 </div>
 
 <div class="box">
+<canvas id="graficoUnidade"></canvas>
+</div>
+
+<div class="box">
 <canvas id="graficoNotas"></canvas>
 </div>
 
@@ -171,6 +192,10 @@ const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmkn
 let dados=[];
 let tabela;
 
+let grafNucleo;
+let grafUnidade;
+let grafNotas;
+
 fetch(API)
 .then(r=>r.json())
 .then(json=>{
@@ -178,10 +203,25 @@ fetch(API)
 dados=json.map(d=>({
 
 data:d.Data ? new Date(d.Data).toISOString().split('T')[0] : null,
+
 nota:Number(d.Nota)||0,
-nucleo:d["Núcleo"]||"Não informado",
-obs:d["Observação"]||"",
-site:d["Site"]||""
+
+nucleo:
+d["Núcleo"]||
+d["Nucleo"]||
+"Não informado",
+
+obs:
+d["Observação"]||
+d["Observacao"]||
+"",
+
+site:
+d["Site"]||
+d["site"]||
+d["Unidade"]||
+d["Escola"]||
+"Não informado"
 
 }));
 
@@ -196,10 +236,13 @@ let meses=new Set();
 let nucleos=new Set();
 
 dados.forEach(d=>{
+
 if(d.data){
 meses.add(new Date(d.data).getMonth()+1);
 }
+
 nucleos.add(d.nucleo);
+
 });
 
 meses.forEach(m=>{
@@ -225,7 +268,9 @@ let busca=$("#buscaObs").val().toLowerCase();
 return dados.filter(d=>{
 
 if(mes && new Date(d.data).getMonth()+1 != mes) return false;
+
 if(nucleo && d.nucleo!=nucleo) return false;
+
 if(busca && !d.obs.toLowerCase().includes(busca)) return false;
 
 return true;
@@ -239,16 +284,22 @@ function render(){
 let f=filtrar();
 
 cards(f);
+
 graficoNucleo(f);
+
+graficoUnidade(f);
+
 graficoNotas(f);
+
 palavras(f);
+
 tabelaDados(f);
 
 }
 
 function cards(f){
 
-if(!f.length)return;
+if(!f.length) return;
 
 let media=f.reduce((s,d)=>s+d.nota,0)/f.length;
 
@@ -269,27 +320,64 @@ $("#nps").text(nps.toFixed(0));
 
 function graficoNucleo(f){
 
-let nucleo={};
+let mapa={};
 
 f.forEach(d=>{
-if(!nucleo[d.nucleo]) nucleo[d.nucleo]=[];
-nucleo[d.nucleo].push(d.nota);
+if(!mapa[d.nucleo]) mapa[d.nucleo]=[];
+mapa[d.nucleo].push(d.nota);
 });
 
-let labels=Object.keys(nucleo);
+let labels=Object.keys(mapa);
 
 let medias=labels.map(n=>{
-let arr=nucleo[n];
+let arr=mapa[n];
 return arr.reduce((a,b)=>a+b)/arr.length;
 });
 
-new Chart(document.getElementById("graficoNucleo"),{
+if(grafNucleo) grafNucleo.destroy();
+
+grafNucleo=new Chart(document.getElementById("graficoNucleo"),{
 
 type:"bar",
+
 data:{
 labels:labels,
 datasets:[{
-label:"Média por núcleo",
+label:"Média por Núcleo",
+data:medias
+}]
+}
+
+});
+
+}
+
+function graficoUnidade(f){
+
+let mapa={};
+
+f.forEach(d=>{
+if(!mapa[d.site]) mapa[d.site]=[];
+mapa[d.site].push(d.nota);
+});
+
+let labels=Object.keys(mapa).slice(0,10);
+
+let medias=labels.map(n=>{
+let arr=mapa[n];
+return arr.reduce((a,b)=>a+b)/arr.length;
+});
+
+if(grafUnidade) grafUnidade.destroy();
+
+grafUnidade=new Chart(document.getElementById("graficoUnidade"),{
+
+type:"bar",
+
+data:{
+labels:labels,
+datasets:[{
+label:"Média por Unidade",
 data:medias
 }]
 }
@@ -303,17 +391,19 @@ function graficoNotas(f){
 let notas={};
 
 f.forEach(d=>{
-if(!notas[d.nota]) notas[d.nota]=0;
-notas[d.nota]++;
+notas[d.nota]=(notas[d.nota]||0)+1;
 });
 
-new Chart(document.getElementById("graficoNotas"),{
+if(grafNotas) grafNotas.destroy();
+
+grafNotas=new Chart(document.getElementById("graficoNotas"),{
 
 type:"bar",
+
 data:{
 labels:Object.keys(notas),
 datasets:[{
-label:"Distribuição das notas",
+label:"Distribuição de Notas",
 data:Object.values(notas)
 }]
 }
@@ -361,7 +451,9 @@ site:d.site
 
 }));
 
-if(tabela) tabela.destroy();
+if(tabela){
+tabela.clear().destroy();
+}
 
 tabela=$("#tabela").DataTable({
 
@@ -376,19 +468,21 @@ render:function(data,type){
 
 if(type==="sort") return data;
 
-return new Date(data).toLocaleDateString();
+return new Date(data).toLocaleDateString("pt-BR");
 
 }
 },
 
+{data:"site",title:"Unidade"},
 {data:"nucleo",title:"Núcleo"},
 {data:"nota",title:"Nota"},
-{data:"obs",title:"Observação"},
-{data:"site",title:"Site"}
+{data:"obs",title:"Observação"}
 
 ],
 
 pageLength:10,
+
+lengthMenu:[10,25,50,100],
 
 language:{
 url:"https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
@@ -400,10 +494,10 @@ url:"https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
 
 function exportarCSV(){
 
-let csv="Data,Nucleo,Nota,Observacao,Site\n";
+let csv="Data,Unidade,Nucleo,Nota,Observacao\n";
 
 dados.forEach(d=>{
-csv+=`${d.data},${d.nucleo},${d.nota},"${d.obs}",${d.site}\n`;
+csv+=`${d.data},${d.site},${d.nucleo},${d.nota},"${d.obs}"\n`;
 });
 
 let blob=new Blob([csv]);
