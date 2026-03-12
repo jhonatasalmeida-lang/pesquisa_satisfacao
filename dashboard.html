@@ -25,20 +25,13 @@ padding:30px;
 color:#2c3e50;
 }
 
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:30px;
-}
-
-.header h1{
-margin:0;
-}
-
 .dashboard{
 max-width:1500px;
 margin:auto;
+}
+
+h1{
+margin-bottom:25px;
 }
 
 .cards{
@@ -61,16 +54,11 @@ font-size:36px;
 margin:0;
 }
 
-.card span{
-color:#777;
-}
-
 .legend{
 background:white;
 padding:15px;
 border-radius:10px;
 margin-bottom:25px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
 .filtros{
@@ -103,6 +91,23 @@ border-radius:12px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
+.palavras{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+.tag{
+display:inline-block;
+background:#3498db;
+color:white;
+padding:6px 10px;
+border-radius:20px;
+margin:4px;
+font-size:13px;
+}
+
 .loader{
 position:fixed;
 top:0;
@@ -127,9 +132,7 @@ z-index:999;
 
 <div class="dashboard">
 
-<div class="header">
 <h1>📊 Dashboard NPS - URE Caieiras</h1>
-</div>
 
 <div class="cards">
 
@@ -157,11 +160,11 @@ z-index:999;
 
 <div class="legend">
 
-<b>📘 Como funciona o NPS</b><br><br>
+<b>Legenda NPS</b><br><br>
 
-Promotores → notas <b>9 ou 10</b><br>
-Neutros → notas <b>7 ou 8</b><br>
-Detratores → notas <b>0 a 6</b><br><br>
+Promotores → notas 9 ou 10<br>
+Neutros → notas 7 ou 8<br>
+Detratores → notas 0 a 6<br><br>
 
 <b>NPS = % Promotores − % Detratores</b>
 
@@ -186,14 +189,6 @@ Detratores → notas <b>0 a 6</b><br><br>
 <div class="graficos">
 
 <div class="grafico">
-<canvas id="graficoGauge"></canvas>
-</div>
-
-<div class="grafico">
-<canvas id="graficoMes"></canvas>
-</div>
-
-<div class="grafico">
 <canvas id="graficoNucleo"></canvas>
 </div>
 
@@ -202,6 +197,16 @@ Detratores → notas <b>0 a 6</b><br><br>
 </div>
 
 </div>
+
+<div class="palavras">
+
+<h3>Principais palavras nas observações</h3>
+
+<div id="palavras"></div>
+
+</div>
+
+<br>
 
 <table id="tabela" class="display" style="width:100%"></table>
 
@@ -213,7 +218,7 @@ const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmkn
 
 let dados=[];
 let tabela;
-let chartGauge,chartMes,chartNucleo,chartNotas;
+let chartNucleo,chartNotas;
 
 fetch(API)
 .then(r=>r.json())
@@ -223,7 +228,7 @@ dados=json.map(d=>({
 
 data:d.Data?new Date(d.Data):null,
 nota:Number(d.Nota)||0,
-nucleo:d["Núcleo"]||d["Nucleo"]||"Não informado",
+nucleo:d["Núcleo"]||"Não informado",
 obs:d["Observação"]||"",
 site:d["Site"]||""
 
@@ -283,10 +288,9 @@ function render(){
 let f=filtrar();
 
 cards(f);
-graficoGauge(f);
-graficoMes(f);
 graficoNucleo(f);
 graficoNotas(f);
+palavras(f);
 tabelaDados(f);
 
 }
@@ -309,74 +313,6 @@ $("#media").text(media.toFixed(1));
 $("#prom").text(promP.toFixed(0)+"%");
 $("#det").text(detP.toFixed(0)+"%");
 $("#nps").text(nps.toFixed(0));
-
-}
-
-function graficoGauge(f){
-
-let prom=f.filter(d=>d.nota>=9).length;
-let det=f.filter(d=>d.nota<=6).length;
-
-let promP=(prom/f.length)*100;
-let detP=(det/f.length)*100;
-
-let nps=promP-detP;
-
-if(chartGauge) chartGauge.destroy();
-
-chartGauge=new Chart(
-document.getElementById("graficoGauge"),
-{
-type:"doughnut",
-data:{
-datasets:[{
-data:[nps+100,200-(nps+100)],
-backgroundColor:["#27ae60","#ecf0f1"]
-}]
-},
-options:{
-rotation:-90,
-circumference:180,
-plugins:{legend:{display:false}}
-}
-});
-
-}
-
-function graficoMes(f){
-
-let meses={};
-
-f.forEach(d=>{
-if(!d.data) return;
-let m=d.data.getMonth()+1;
-if(!meses[m]) meses[m]=[];
-meses[m].push(d.nota);
-});
-
-let labels=Object.keys(meses);
-
-let medias=labels.map(m=>{
-let arr=meses[m];
-return arr.reduce((a,b)=>a+b)/arr.length;
-});
-
-if(chartMes) chartMes.destroy();
-
-chartMes=new Chart(
-document.getElementById("graficoMes"),
-{
-type:"line",
-data:{
-labels:labels,
-datasets:[{
-label:"Média por mês",
-data:medias,
-borderColor:"#3498db",
-tension:.3
-}]
-}
-});
 
 }
 
@@ -441,6 +377,35 @@ backgroundColor:"#3498db"
 }]
 }
 });
+
+}
+
+function palavras(f){
+
+let texto=f.map(d=>d.obs).join(" ").toLowerCase();
+
+let palavras=texto.match(/\b\w+\b/g)||[];
+
+let stop=["de","da","do","a","o","e","que","em","para"];
+
+let contagem={};
+
+palavras.forEach(p=>{
+if(stop.includes(p)) return;
+contagem[p]=(contagem[p]||0)+1;
+});
+
+let top=Object.entries(contagem)
+.sort((a,b)=>b[1]-a[1])
+.slice(0,20);
+
+let html="";
+
+top.forEach(p=>{
+html+=`<span class="tag">${p[0]}</span>`;
+});
+
+$("#palavras").html(html);
 
 }
 
