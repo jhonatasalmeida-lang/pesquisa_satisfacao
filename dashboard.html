@@ -22,16 +22,15 @@ font-family:Segoe UI;
 background:#eef2f7;
 margin:0;
 padding:30px;
-color:#2c3e50;
 }
 
 .dashboard{
-max-width:1500px;
+max-width:1600px;
 margin:auto;
 }
 
 h1{
-margin-bottom:25px;
+margin-bottom:20px;
 }
 
 .cards{
@@ -44,21 +43,14 @@ margin-bottom:20px;
 .card{
 background:white;
 padding:25px;
-border-radius:14px;
-box-shadow:0 4px 15px rgba(0,0,0,0.08);
+border-radius:12px;
+box-shadow:0 3px 10px rgba(0,0,0,0.08);
 text-align:center;
 }
 
 .card h2{
-font-size:36px;
 margin:0;
-}
-
-.legend{
-background:white;
-padding:15px;
-border-radius:10px;
-margin-bottom:25px;
+font-size:34px;
 }
 
 .filtros{
@@ -77,49 +69,28 @@ border-radius:6px;
 border:1px solid #ccc;
 }
 
-.graficos{
+.grid{
 display:grid;
 grid-template-columns:1fr 1fr;
 gap:25px;
 margin-bottom:30px;
 }
 
-.grafico{
+.box{
 background:white;
 padding:20px;
 border-radius:12px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
-.palavras{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 2px 8px rgba(0,0,0,0.08);
-}
-
-.tag{
-display:inline-block;
+.tags span{
 background:#3498db;
 color:white;
 padding:6px 10px;
 border-radius:20px;
 margin:4px;
+display:inline-block;
 font-size:13px;
-}
-
-.loader{
-position:fixed;
-top:0;
-left:0;
-right:0;
-bottom:0;
-background:white;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:22px;
-z-index:999;
 }
 
 </style>
@@ -127,8 +98,6 @@ z-index:999;
 </head>
 
 <body>
-
-<div id="loader" class="loader">Carregando dados...</div>
 
 <div class="dashboard">
 
@@ -158,18 +127,6 @@ z-index:999;
 
 </div>
 
-<div class="legend">
-
-<b>Legenda NPS</b><br><br>
-
-Promotores → notas 9 ou 10<br>
-Neutros → notas 7 ou 8<br>
-Detratores → notas 0 a 6<br><br>
-
-<b>NPS = % Promotores − % Detratores</b>
-
-</div>
-
 <div class="filtros">
 
 <select id="filtroMes">
@@ -186,27 +143,22 @@ Detratores → notas 0 a 6<br><br>
 
 </div>
 
-<div class="graficos">
+<div class="grid">
 
-<div class="grafico">
+<div class="box">
 <canvas id="graficoNucleo"></canvas>
 </div>
 
-<div class="grafico">
+<div class="box">
 <canvas id="graficoNotas"></canvas>
 </div>
 
+<div class="box">
+<h3>Palavras mais citadas</h3>
+<div id="tags" class="tags"></div>
 </div>
 
-<div class="palavras">
-
-<h3>Principais palavras nas observações</h3>
-
-<div id="palavras"></div>
-
 </div>
-
-<br>
 
 <table id="tabela" class="display" style="width:100%"></table>
 
@@ -218,7 +170,6 @@ const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmkn
 
 let dados=[];
 let tabela;
-let chartNucleo,chartNotas;
 
 fetch(API)
 .then(r=>r.json())
@@ -226,15 +177,13 @@ fetch(API)
 
 dados=json.map(d=>({
 
-data:d.Data?new Date(d.Data):null,
+data:d.Data ? new Date(d.Data).toISOString().split('T')[0] : null,
 nota:Number(d.Nota)||0,
 nucleo:d["Núcleo"]||"Não informado",
 obs:d["Observação"]||"",
 site:d["Site"]||""
 
 }));
-
-document.getElementById("loader").style.display="none";
 
 inicializarFiltros();
 render();
@@ -247,7 +196,9 @@ let meses=new Set();
 let nucleos=new Set();
 
 dados.forEach(d=>{
-if(d.data) meses.add(d.data.getMonth()+1);
+if(d.data){
+meses.add(new Date(d.data).getMonth()+1);
+}
 nucleos.add(d.nucleo);
 });
 
@@ -273,7 +224,7 @@ let busca=$("#buscaObs").val().toLowerCase();
 
 return dados.filter(d=>{
 
-if(mes && d.data && (d.data.getMonth()+1)!=mes) return false;
+if(mes && new Date(d.data).getMonth()+1 != mes) return false;
 if(nucleo && d.nucleo!=nucleo) return false;
 if(busca && !d.obs.toLowerCase().includes(busca)) return false;
 
@@ -297,7 +248,7 @@ tabelaDados(f);
 
 function cards(f){
 
-if(!f.length) return;
+if(!f.length)return;
 
 let media=f.reduce((s,d)=>s+d.nota,0)/f.length;
 
@@ -332,20 +283,17 @@ let arr=nucleo[n];
 return arr.reduce((a,b)=>a+b)/arr.length;
 });
 
-if(chartNucleo) chartNucleo.destroy();
+new Chart(document.getElementById("graficoNucleo"),{
 
-chartNucleo=new Chart(
-document.getElementById("graficoNucleo"),
-{
 type:"bar",
 data:{
 labels:labels,
 datasets:[{
 label:"Média por núcleo",
-data:medias,
-backgroundColor:"#8e44ad"
+data:medias
 }]
 }
+
 });
 
 }
@@ -359,23 +307,17 @@ if(!notas[d.nota]) notas[d.nota]=0;
 notas[d.nota]++;
 });
 
-let labels=Object.keys(notas);
-let valores=Object.values(notas);
+new Chart(document.getElementById("graficoNotas"),{
 
-if(chartNotas) chartNotas.destroy();
-
-chartNotas=new Chart(
-document.getElementById("graficoNotas"),
-{
 type:"bar",
 data:{
-labels:labels,
+labels:Object.keys(notas),
 datasets:[{
 label:"Distribuição das notas",
-data:valores,
-backgroundColor:"#3498db"
+data:Object.values(notas)
 }]
 }
+
 });
 
 }
@@ -386,38 +328,38 @@ let texto=f.map(d=>d.obs).join(" ").toLowerCase();
 
 let palavras=texto.match(/\b\w+\b/g)||[];
 
-let stop=["de","da","do","a","o","e","que","em","para"];
-
-let contagem={};
+let cont={};
 
 palavras.forEach(p=>{
-if(stop.includes(p)) return;
-contagem[p]=(contagem[p]||0)+1;
+if(p.length<4) return;
+cont[p]=(cont[p]||0)+1;
 });
 
-let top=Object.entries(contagem)
+let top=Object.entries(cont)
 .sort((a,b)=>b[1]-a[1])
 .slice(0,20);
 
 let html="";
 
 top.forEach(p=>{
-html+=`<span class="tag">${p[0]}</span>`;
+html+=`<span>${p[0]}</span>`;
 });
 
-$("#palavras").html(html);
+$("#tags").html(html);
 
 }
 
 function tabelaDados(f){
 
-let tableData=f.map(d=>[
-d.data?d.data.toLocaleDateString():"-",
-d.nucleo,
-d.nota,
-d.obs||"-",
-d.site
-]);
+let tableData=f.map(d=>({
+
+data:d.data,
+nucleo:d.nucleo,
+nota:d.nota,
+obs:d.obs,
+site:d.site
+
+}));
 
 if(tabela) tabela.destroy();
 
@@ -426,16 +368,27 @@ tabela=$("#tabela").DataTable({
 data:tableData,
 
 columns:[
-{title:"Data"},
-{title:"Núcleo"},
-{title:"Nota"},
-{title:"Observação"},
-{title:"Site"}
+
+{
+data:"data",
+title:"Data",
+render:function(data,type){
+
+if(type==="sort") return data;
+
+return new Date(data).toLocaleDateString();
+
+}
+},
+
+{data:"nucleo",title:"Núcleo"},
+{data:"nota",title:"Nota"},
+{data:"obs",title:"Observação"},
+{data:"site",title:"Site"}
+
 ],
 
 pageLength:10,
-
-lengthMenu:[10,25,50,100],
 
 language:{
 url:"https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
@@ -450,7 +403,7 @@ function exportarCSV(){
 let csv="Data,Nucleo,Nota,Observacao,Site\n";
 
 dados.forEach(d=>{
-csv+=`${d.data?d.data.toLocaleDateString():""},${d.nucleo},${d.nota},"${d.obs}",${d.site}\n`;
+csv+=`${d.data},${d.nucleo},${d.nota},"${d.obs}",${d.site}\n`;
 });
 
 let blob=new Blob([csv]);
