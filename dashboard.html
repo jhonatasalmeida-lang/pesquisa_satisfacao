@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Dashboard NPS - URE Caieiras</title>
+<title>Dashboard NPS</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -20,7 +20,7 @@
 
 body{
 font-family:Segoe UI;
-background:#f3f6fb;
+background:#f4f7fb;
 margin:0;
 padding:30px;
 }
@@ -28,10 +28,6 @@ padding:30px;
 .dashboard{
 max-width:1700px;
 margin:auto;
-}
-
-h1{
-margin-bottom:20px;
 }
 
 .cards{
@@ -44,7 +40,7 @@ margin-bottom:25px;
 .card{
 background:white;
 padding:25px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 3px 10px rgba(0,0,0,0.08);
 text-align:center;
 }
@@ -80,26 +76,13 @@ margin-bottom:30px;
 .box{
 background:white;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 box-shadow:0 2px 8px rgba(0,0,0,0.08);
 }
 
-.tags span{
-background:#3498db;
-color:white;
-padding:6px 10px;
-border-radius:20px;
-margin:4px;
-display:inline-block;
-font-size:13px;
-}
-
-.legenda{
-background:white;
-padding:15px;
-border-radius:10px;
-margin-bottom:20px;
-font-size:14px;
+.npsClass{
+font-weight:bold;
+margin-top:5px;
 }
 
 </style>
@@ -112,24 +95,17 @@ font-size:14px;
 
 <h1>📊 Dashboard NPS</h1>
 
-<div class="legenda">
-<b>Legenda NPS</b><br>
-Promotores: notas 9 e 10<br>
-Neutros: notas 7 e 8<br>
-Detratores: notas de 0 a 6<br><br>
-<b>NPS = % Promotores − % Detratores</b>
-</div>
-
 <div class="cards">
 
 <div class="card">
 <h2 id="media">0</h2>
-Média Geral
+Média
 </div>
 
 <div class="card">
 <h2 id="nps">0</h2>
 NPS
+<div id="npsClass" class="npsClass"></div>
 </div>
 
 <div class="card">
@@ -156,27 +132,24 @@ Detratores
 
 <input type="text" id="buscaObs" placeholder="Buscar observação">
 
-<button onclick="exportarCSV()">Exportar CSV</button>
-
 </div>
 
 <div class="grid">
+
+<div class="box">
+<canvas id="velocimetro"></canvas>
+</div>
+
+<div class="box">
+<canvas id="tendencia"></canvas>
+</div>
 
 <div class="box">
 <canvas id="graficoNucleo"></canvas>
 </div>
 
 <div class="box">
-<canvas id="graficoUnidade"></canvas>
-</div>
-
-<div class="box">
 <canvas id="graficoNotas"></canvas>
-</div>
-
-<div class="box">
-<h3>Palavras mais citadas</h3>
-<div id="tags" class="tags"></div>
 </div>
 
 </div>
@@ -192,9 +165,8 @@ const API="https://script.google.com/macros/s/AKfycbw5F7YbtnK2IHBrDa44n701fErmkn
 let dados=[];
 let tabela;
 
-let grafNucleo;
-let grafUnidade;
-let grafNotas;
+let grafVel;
+let grafTrend;
 
 fetch(API)
 .then(r=>r.json())
@@ -284,22 +256,15 @@ function render(){
 let f=filtrar();
 
 cards(f);
-
-graficoNucleo(f);
-
-graficoUnidade(f);
-
-graficoNotas(f);
-
-palavras(f);
-
+velocimetro(f);
+tendencia(f);
 tabelaDados(f);
 
 }
 
 function cards(f){
 
-if(!f.length) return;
+if(!f.length)return;
 
 let media=f.reduce((s,d)=>s+d.nota,0)/f.length;
 
@@ -316,126 +281,90 @@ $("#prom").text(promP.toFixed(0)+"%");
 $("#det").text(detP.toFixed(0)+"%");
 $("#nps").text(nps.toFixed(0));
 
+let classe="Zona de melhoria";
+
+if(nps>=75) classe="Excelência";
+else if(nps>=50) classe="Muito bom";
+else if(nps<0) classe="Crítico";
+
+$("#npsClass").text(classe);
+
 }
 
-function graficoNucleo(f){
+function velocimetro(f){
 
-let mapa={};
+let prom=f.filter(d=>d.nota>=9).length;
+let det=f.filter(d=>d.nota<=6).length;
+
+let promP=(prom/f.length)*100;
+let detP=(det/f.length)*100;
+
+let nps=promP-detP;
+
+if(grafVel)grafVel.destroy();
+
+grafVel=new Chart(document.getElementById("velocimetro"),{
+
+type:"doughnut",
+
+data:{
+labels:["Score","Restante"],
+datasets:[{
+data:[nps+100,200-(nps+100)],
+backgroundColor:["#22c55e","#e5e7eb"]
+}]
+},
+
+options:{
+rotation:270,
+circumference:180,
+plugins:{legend:{display:false}}
+}
+
+});
+
+}
+
+function tendencia(f){
+
+let meses={};
 
 f.forEach(d=>{
-if(!mapa[d.nucleo]) mapa[d.nucleo]=[];
-mapa[d.nucleo].push(d.nota);
+
+let mes=new Date(d.data).getMonth()+1;
+
+if(!meses[mes])meses[mes]=[];
+
+meses[mes].push(d.nota);
+
 });
 
-let labels=Object.keys(mapa);
+let labels=Object.keys(meses);
 
-let medias=labels.map(n=>{
-let arr=mapa[n];
+let medias=labels.map(m=>{
+
+let arr=meses[m];
 return arr.reduce((a,b)=>a+b)/arr.length;
+
 });
 
-if(grafNucleo) grafNucleo.destroy();
+if(grafTrend)grafTrend.destroy();
 
-grafNucleo=new Chart(document.getElementById("graficoNucleo"),{
+grafTrend=new Chart(document.getElementById("tendencia"),{
 
-type:"bar",
+type:"line",
 
 data:{
 labels:labels,
 datasets:[{
-label:"Média por Núcleo",
-data:medias
+label:"Tendência média",
+data:medias,
+borderColor:"#3b82f6",
+fill:false
 }]
 }
 
 });
-
-}
-
-function graficoUnidade(f){
-
-let mapa={};
-
-f.forEach(d=>{
-if(!mapa[d.site]) mapa[d.site]=[];
-mapa[d.site].push(d.nota);
-});
-
-let labels=Object.keys(mapa).slice(0,10);
-
-let medias=labels.map(n=>{
-let arr=mapa[n];
-return arr.reduce((a,b)=>a+b)/arr.length;
-});
-
-if(grafUnidade) grafUnidade.destroy();
-
-grafUnidade=new Chart(document.getElementById("graficoUnidade"),{
-
-type:"bar",
-
-data:{
-labels:labels,
-datasets:[{
-label:"Média por Unidade",
-data:medias
-}]
-}
-
-});
-
-}
-
-function graficoNotas(f){
-
-let notas={};
-
-f.forEach(d=>{
-notas[d.nota]=(notas[d.nota]||0)+1;
-});
-
-if(grafNotas) grafNotas.destroy();
-
-grafNotas=new Chart(document.getElementById("graficoNotas"),{
-
-type:"bar",
-
-data:{
-labels:Object.keys(notas),
-datasets:[{
-label:"Distribuição de Notas",
-data:Object.values(notas)
-}]
-}
-
-});
-
-}
-
-function palavras(f){
-
-let texto=f.map(d=>d.obs).join(" ").toLowerCase();
-
-let palavras=texto.match(/\b\w+\b/g)||[];
-
-let cont={};
-
-palavras.forEach(p=>{
-if(p.length<4) return;
-cont[p]=(cont[p]||0)+1;
-});
-
-let top=Object.entries(cont)
-.sort((a,b)=>b[1]-a[1])
-.slice(0,20);
-
-let html="";
-
-top.forEach(p=>{
-html+=`<span>${p[0]}</span>`;
-});
-
-$("#tags").html(html);
 
 }
 
@@ -444,10 +373,10 @@ function tabelaDados(f){
 let tableData=f.map(d=>({
 
 data:d.data,
+site:d.site,
 nucleo:d.nucleo,
 nota:d.nota,
-obs:d.obs,
-site:d.site
+obs:d.obs
 
 }));
 
@@ -466,7 +395,7 @@ data:"data",
 title:"Data",
 render:function(data,type){
 
-if(type==="sort") return data;
+if(type==="sort")return data;
 
 return new Date(data).toLocaleDateString("pt-BR");
 
@@ -482,8 +411,6 @@ return new Date(data).toLocaleDateString("pt-BR");
 
 pageLength:10,
 
-lengthMenu:[10,25,50,100],
-
 language:{
 url:"https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
 }
@@ -492,27 +419,8 @@ url:"https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
 
 }
 
-function exportarCSV(){
-
-let csv="Data,Unidade,Nucleo,Nota,Observacao\n";
-
-dados.forEach(d=>{
-csv+=`${d.data},${d.site},${d.nucleo},${d.nota},"${d.obs}"\n`;
-});
-
-let blob=new Blob([csv]);
-
-let a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-
-a.download="dados_nps.csv";
-
-a.click();
-
-}
-
 </script>
 
 </body>
+
 </html>
