@@ -202,7 +202,7 @@ fetch(API)
 
 dados=json.map(d=>({
 
-data:d.Data ? new Date(d.Data).toISOString().split('T')[0] : null,
+data:d.Data || null,
 
 nota:Number(d.Nota)||0,
 
@@ -494,8 +494,13 @@ columns:[
 data:"data",
 title:"Data",
 render:function(data,type){
+
 if(type==="sort") return data;
-return new Date(data).toLocaleDateString("pt-BR");
+
+let dt = new Date(data);
+
+return dt.toLocaleDateString("pt-BR") + " " + dt.toLocaleTimeString("pt-BR");
+
 }
 },
 
